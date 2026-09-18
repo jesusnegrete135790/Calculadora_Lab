@@ -1,0 +1,11 @@
+Coloca aquí el archivo oficial del escudo de la UNAM con el nombre exacto:
+
+    escudo-unam.svg
+
+(También funciona un PNG; en ese caso cambia ESCUDO_URL en src/Login.jsx.)
+
+Descárgalo de la fuente oficial de tu entidad o de identidad.unam.mx,
+en su versión monocromática clara, que es la que corresponde al fondo azul.
+
+Mientras el archivo no exista, el componente muestra una marca geométrica
+de respaldo, así que la app no se rompe.
