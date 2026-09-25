@@ -28,8 +28,12 @@ export function calculateStatistics(input: StatisticsInput): CalculationResult {
     sorted.forEach((value) => counts.set(value, (counts.get(value) ?? 0) + 1));
     const maxCount = Math.max(...counts.values());
     const modes = [...counts].filter(([, count]) => count === maxCount).map(([value]) => value);
-    const table = [...counts].map(([value, count]) => [value, count, fmt(count / values.length), fmt([...counts].filter(([v]) => v <= value).reduce((sum, [, c]) => sum + c, 0) / values.length)]);
-    return { title: 'Media', value: String(fmt(average)), subtitle: `${values.length} datos · Mediana ${fmt(median)}`, steps: [{ title: 'Tendencia central', detail: `Media = Σx/n = ${fmt(average)}; mediana = ${fmt(median)}; moda = ${modes.length === counts.size ? 'sin moda única' : modes.join(', ')}.` }, { title: 'Dispersión', detail: `Varianza poblacional = ${fmt(variance)}; desviación estándar = ${fmt(sigma)}.` }, { title: 'Forma', detail: `Asimetría = ${fmt(skew)}; exceso de curtosis = ${fmt(kurtosis)}.` }], table: { columns: ['Valor', 'Frecuencia', 'Relativa', 'Acumulada'], rows: table }, chart: counts.size <= 30 ? { labels: [...counts.keys()].map(String), values: [...counts.values()], label: 'Frecuencia' } : undefined, note: counts.size > 30 ? 'La gráfica se omite cuando hay más de 30 valores distintos.' : undefined };
+    let cumulative = 0;
+    const table = [...counts].map(([value, count]) => {
+      cumulative += count;
+      return [value, count, Number((count / values.length).toFixed(4)), cumulative];
+    });
+    return { title: 'Media', value: String(fmt(average)), subtitle: `${values.length} datos · Mediana ${fmt(median)}`, steps: [{ title: 'Tendencia central', detail: `Media = Σx/n = ${fmt(average)}; mediana = ${fmt(median)}; moda = ${modes.length === counts.size ? 'sin moda única' : modes.join(', ')}.` }, { title: 'Dispersión', detail: `Varianza poblacional = ${fmt(variance)}; desviación estándar = ${fmt(sigma)}.` }, { title: 'Forma', detail: `Asimetría = ${fmt(skew)}; exceso de curtosis = ${fmt(kurtosis)}.` }], table: { columns: ['Clase / valor', 'Frecuencia absoluta', 'Frecuencia relativa', 'Frecuencia acumulada'], rows: table }, chart: counts.size <= 30 ? { labels: [...counts.keys()].map(String), values: [...counts.values()], label: 'Frecuencia' } : undefined, note: counts.size > 30 ? 'La gráfica se omite cuando hay más de 30 valores distintos.' : undefined };
   }
   if (method === 'binomial') {
     if (!Number.isInteger(n) || n < 0 || n > 170 || !Number.isInteger(k) || k < 0 || k > n || p < 0 || p > 1) throw new Error('Usa n entero entre 0 y 170, k entre 0 y n, y p entre 0 y 1.');

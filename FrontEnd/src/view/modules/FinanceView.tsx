@@ -1,0 +1,57 @@
+import { useState, type FormEvent } from 'react';
+import { ArrowRight, Info } from 'lucide-react';
+import { useCalculationController } from '../../controller/useCalculationController';
+import { calculateFinance, type FinanceInput, type FinanceMethod } from '../../model/finance';
+import { NumberField, TextField } from '../components/Fields';
+import ResultPanel from '../components/ResultPanel';
+
+const names: Record<FinanceMethod, string> = {
+  simple: 'Interés simple',
+  compuesto: 'Interés compuesto',
+  'valor-actual': 'Valor actual compuesto',
+  'descuento-comercial': 'Descuento comercial',
+  'descuento-racional': 'Descuento racional',
+  'descuento-serie': 'Descuentos en serie',
+  'tasa-equivalente': 'Tasas equivalentes',
+  amortizacion: 'Tabla de amortización',
+};
+
+export default function FinanceView() {
+  const [input, setInput] = useState<FinanceInput>({
+    method: 'compuesto', capital: 10000, annualRate: 12, years: 2, periods: 12,
+    extraPayment: 0, secondaryRate: 5, targetPeriods: 4, rateChanges: '', partialPayments: '',
+  });
+  const controller = useCalculationController('finanzas', calculateFinance);
+  const update = <K extends keyof FinanceInput>(key: K, value: FinanceInput[K]) => setInput((current) => ({ ...current, [key]: value }));
+  const requiresCapital = input.method !== 'tasa-equivalente';
+  const requiresTime = !['descuento-serie', 'tasa-equivalente'].includes(input.method);
+  const requiresPeriods = ['compuesto', 'valor-actual', 'tasa-equivalente', 'amortizacion'].includes(input.method);
+  function submit(event: FormEvent) { event.preventDefault(); controller.run(names[input.method], input); }
+
+  return <div className="workspace-grid">
+    <section className="form-card">
+      <div className="form-card-head"><span className="form-head-icon">02</span><div><h2>Calculadora financiera</h2><p>Selecciona la operación y define los parámetros.</p></div></div>
+      <form onSubmit={submit} className="fields">
+        <label className="field"><span>Operación</span><select value={input.method} onChange={(event) => { update('method', event.target.value as FinanceMethod); controller.reset(); }}>{Object.entries(names).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
+        <div className="field-row">
+          {requiresCapital && <NumberField label={input.method.includes('descuento') || input.method === 'valor-actual' ? 'Valor nominal (MXN)' : 'Capital inicial (MXN)'} value={input.capital} onChange={(value) => update('capital', value)} min={0}/>}
+          <NumberField label={input.method === 'descuento-serie' ? 'Primer descuento (%)' : 'Tasa anual (%)'} value={input.annualRate} onChange={(value) => update('annualRate', value)} min={0}/>
+        </div>
+        {input.method === 'descuento-serie' && <NumberField label="Segundo descuento (%)" value={input.secondaryRate ?? 0} onChange={(value) => update('secondaryRate', value)} min={0} max={100}/>}
+        <div className="field-row">
+          {requiresTime && <NumberField label="Tiempo (años)" value={input.years} onChange={(value) => update('years', value)} min={0}/>}
+          {requiresPeriods && <NumberField label="Periodos por año" value={input.periods} onChange={(value) => update('periods', value)} step="1" min={1}/>}
+        </div>
+        {input.method === 'tasa-equivalente' && <NumberField label="Periodos de destino por año" value={input.targetPeriods ?? 12} onChange={(value) => update('targetPeriods', value)} step="1" min={1}/>}
+        {input.method === 'amortizacion' && <>
+          <NumberField label="Pago adicional recurrente (MXN)" value={input.extraPayment} onChange={(value) => update('extraPayment', value)} min={0} hint="Se aplica directamente al capital en cada pago."/>
+          <TextField label="Cambios de tasa por periodo (opcional)" value={input.rateChanges ?? ''} onChange={(value) => update('rateChanges', value)} placeholder="7:15, 13:10" hint="Periodo:tasa anual; 7:15 cambia a 15% en el pago 7."/>
+          <TextField label="Abonos extraordinarios por periodo (opcional)" value={input.partialPayments ?? ''} onChange={(value) => update('partialPayments', value)} placeholder="7:500, 13:1000" hint="Periodo:monto; 7:500 agrega $500 al pago 7 y reduce el saldo."/>
+        </>}
+        <button className="button button-primary">Calcular <ArrowRight size={18}/></button>
+      </form>
+      <div className="form-tip"><Info size={17}/><span>La tasa se interpreta como anual salvo en descuentos en serie, donde cada porcentaje se aplica de forma sucesiva.</span></div>
+    </section>
+    <ResultPanel result={controller.result} error={controller.error} reset={controller.reset}/>
+  </div>;
+}

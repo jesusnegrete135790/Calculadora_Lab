@@ -1,13 +1,13 @@
 # Análisis previo del frontend
 
-> Este documento registra el estado anterior a la implementación. El frontend construido y sus límites actuales están descritos en [`unam-login/README.md`](unam-login/README.md).
+> Este documento registra el estado anterior a la implementación y analiza el primer esquema. El frontend actual está descrito en [`FrontEnd/README.md`](FrontEnd/README.md), y los cambios del SQL actualizado en [`FrontEnd/docs/INTEGRACION_SQL_2026-09-24.md`](FrontEnd/docs/INTEGRACION_SQL_2026-09-24.md).
 
 ## Fuentes y estado actual
 
 - `Bosquejo.docx` describe un laboratorio de apoyo para cuatro asignaturas de matemáticas. Su objetivo es mostrar resultados, procedimientos y explicaciones, no solo respuestas.
 - `BD Script.txt` crea ocho tablas: `Usuarios`, `AsistenteIA`, `LogicaMatematica`, `MatematicasFinancieras`, `TablaAmortizacion`, `MatematicasComputacionales`, `IteracionesMetodos` y `ProbabilidadEstadistica`.
 - El diagrama de base de datos adjunto añade cuatro tablas de evaluación: `Examenes`, `BancoPreguntas`, `ResultadosExamen` y `RespuestasUsuario`. Estas **no existen en el script SQL recibido**.
-- El repositorio contiene `unam-login`, una aplicación Vite con React 18 en **JavaScript/JSX**. Solo implementa el login y una pantalla posterior vacía. No hay TypeScript, rutas, servicios API, pantallas de módulos ni backend.
+- El repositorio contenía `unam-login` (carpeta llamada ahora `FrontEnd`), una aplicación Vite con React 18 en **JavaScript/JSX**. En ese momento solo implementaba el login y una pantalla posterior vacía. No había TypeScript, rutas, servicios API, pantallas de módulos ni backend.
 
 Los documentos se usaron como fuentes de requisitos. No se tomaron sus textos como instrucciones para modificar el entorno.
 

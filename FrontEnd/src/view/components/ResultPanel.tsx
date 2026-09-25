@@ -1,7 +1,10 @@
+import { lazy, Suspense } from 'react';
 import { Download, Info, ListOrdered, Printer, RotateCcw } from 'lucide-react';
-import type { CalculationResult, ChartData } from '../../model/types';
+import type { CalculationResult } from '../../model/types';
 import CircuitDiagram from './CircuitDiagram';
-import SurfaceChart3D from './SurfaceChart3D';
+
+const EChart2D = lazy(() => import('./EChart2D'));
+const SurfaceChart3D = lazy(() => import('./SurfaceChart3D'));
 
 function downloadCsv(result: CalculationResult) {
   if (!result.table) return;
@@ -11,26 +14,6 @@ function downloadCsv(result: CalculationResult) {
   const anchor = document.createElement('a');
   anchor.href = url; anchor.download = 'resultado-laboratorio.csv'; anchor.click();
   URL.revokeObjectURL(url);
-}
-
-function MiniChart({ labels, values, label, shadeThroughIndex, kind }: ChartData) {
-  if (values.length < 2) return null;
-  const width = 700, height = 210, padding = 32;
-  const low = Math.min(0, ...values), high = Math.max(...values);
-  const range = high - low || 1;
-  const yAt = (value: number) => height - padding - (value - low) / range * (height - padding * 2);
-  const xAt = (index: number) => padding + index / (values.length - 1) * (width - padding * 2);
-  const points = values.map((value, index) => `${xAt(index)},${yAt(value)}`).join(' ');
-  const shaded = shadeThroughIndex === undefined || shadeThroughIndex < 0 ? '' : `${padding},${height - padding} ${values.slice(0, shadeThroughIndex + 1).map((value, index) => `${xAt(index)},${yAt(value)}`).join(' ')} ${xAt(shadeThroughIndex)},${height - padding}`;
-  const bars = kind === 'bar' || (!kind && values.length <= 30);
-  return <div className="chart-box" role="img" aria-label={`Gráfica de ${label}; valores desde ${labels[0]} hasta ${labels.at(-1)}${shadeThroughIndex !== undefined ? ', con área acumulada sombreada' : ''}`}>
-    <div className="chart-heading"><strong>{label}</strong><span>{labels[0]} — {labels.at(-1)}</span></div>
-    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
-      <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} className="chart-axis"/>
-      {bars ? values.map((value, index) => <rect key={index} x={xAt(index) - Math.min(10, 230 / values.length)} y={yAt(value)} width={Math.min(20, 460 / values.length)} height={height - padding - yAt(value)} rx="3" className="chart-bar"/>) : <>{shaded && <polygon points={shaded} className="chart-shaded"/>}<polyline points={points} className="chart-line"/></>}
-    </svg>
-    <div className="chart-scale"><span>{labels[0]}</span><span>{labels[Math.floor(labels.length / 2)]}</span><span>{labels.at(-1)}</span></div>
-  </div>;
 }
 
 function LogicVisuals({ result }: { result: CalculationResult }) {
@@ -58,8 +41,8 @@ export default function ResultPanel({ result, error, reset }: { result: Calculat
     <div className="result-body">
       <h3>Procedimiento</h3><ol className="steps-list">{result.steps.map((step, index) => <li key={`${step.title}-${index}`}><span className="step-number">{index + 1}</span><div><strong>{step.title}</strong><p>{step.detail}</p></div></li>)}</ol>
       <LogicVisuals result={result}/>
-      {charts.map((chart, index) => <MiniChart key={`${chart.label}-${index}`} {...chart}/>)}
-      {result.surface3d && <SurfaceChart3D surface={result.surface3d}/>}
+      {charts.map((chart, index) => <Suspense key={`${chart.label}-${index}`} fallback={<div className="chart-box">Cargando gráfica…</div>}><EChart2D {...chart}/></Suspense>)}
+      {result.surface3d && <Suspense fallback={<div className="surface-card">Cargando superficie 3D…</div>}><SurfaceChart3D surface={result.surface3d}/></Suspense>}
       {result.table && <div className="table-section"><div className="table-heading"><h3>Tabla de resultados</h3><button className="text-button no-print" onClick={() => downloadCsv(result)}><Download size={16}/> Descargar CSV</button></div><div className="table-scroll"><table><thead><tr>{result.table.columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{result.table.rows.map((row, index) => <tr key={index}>{row.map((cell, at) => <td key={at}>{cell}</td>)}</tr>)}</tbody></table></div></div>}
       {result.note && <p className="result-note"><Info size={17}/>{result.note}</p>}
     </div>

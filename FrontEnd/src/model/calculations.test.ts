@@ -34,6 +34,15 @@ describe('matemáticas financieras', () => {
     expect(schedule.table?.rows[5][1]).toBe('10.00%');
     expect(schedule.table?.rows[6][1]).toBe('20.00%');
   });
+  it('aplica un abono extraordinario solo en el periodo indicado', () => {
+    const base = { method: 'amortizacion' as const, capital: 1200, annualRate: 0, years: 1, periods: 12, extraPayment: 0 };
+    const ordinary = calculateFinance(base);
+    const withPayment = calculateFinance({ ...base, partialPayments: '2:300' });
+    expect(withPayment.table?.rows).toHaveLength(12);
+    expect(withPayment.table?.rows[0][5]).toBe(ordinary.table?.rows[0][5]);
+    expect(withPayment.table?.rows[1][5]).toContain('400.00');
+    expect(() => calculateFinance({ ...base, partialPayments: '13:300' })).toThrow();
+  });
   it('ofrece curvas y una superficie de sensibilidad para interés compuesto', () => {
     const result = calculateFinance({ method: 'compuesto', capital: 1000, annualRate: 12, years: 2, periods: 12, extraPayment: 0 });
     expect(result.charts).toHaveLength(2);
@@ -69,6 +78,9 @@ const statisticsBase: StatisticsInput = { method: 'descriptiva', data: '1,2,3', 
 describe('probabilidad y estadística', () => {
   it('calcula medidas descriptivas y probabilidades', () => {
     expect(Number(calculateStatistics(statisticsBase).value)).toBe(2);
+    const frequencyTable = calculateStatistics(statisticsBase).table;
+    expect(frequencyTable?.columns).toContain('Frecuencia acumulada');
+    expect(frequencyTable?.rows.at(-1)?.at(-1)).toBe(3);
     expect(Number(calculateStatistics({ ...statisticsBase, method: 'binomial' }).value)).toBeCloseTo(0.21499, 4);
     expect(Number(calculateStatistics({ ...statisticsBase, method: 'poisson' }).value)).toBeCloseTo(0.19537, 4);
     expect(Number(calculateStatistics({ ...statisticsBase, method: 'normal' }).value)).toBeCloseTo(0.5, 5);

@@ -13,6 +13,7 @@ export interface FinanceInput {
   secondaryRate?: number;
   targetPeriods?: number;
   rateChanges?: string;
+  partialPayments?: string;
 }
 
 const money = (value: number) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 }).format(value);
@@ -28,7 +29,7 @@ const rateSensitivity = (years: number, annualRate: number, value: (time: number
 };
 
 export function calculateFinance(input: FinanceInput): CalculationResult {
-  const { method, capital, annualRate, years, periods, extraPayment, secondaryRate = 0, targetPeriods = 12, rateChanges = '' } = input;
+  const { method, capital, annualRate, years, periods, extraPayment, secondaryRate = 0, targetPeriods = 12, rateChanges = '', partialPayments = '' } = input;
   if (![capital, annualRate, years, periods, extraPayment, secondaryRate, targetPeriods].every(Number.isFinite) || capital <= 0 || annualRate < 0 || years <= 0 || periods < 1 || !Number.isInteger(periods) || extraPayment < 0 || secondaryRate < 0 || targetPeriods < 1 || !Number.isInteger(targetPeriods)) {
     throw new Error('Revisa los datos: capital, plazo y periodos deben ser positivos; tasa y pago adicional no pueden ser negativos.');
   }
@@ -81,6 +82,14 @@ export function calculateFinance(input: FinanceInput): CalculationResult {
     if (period < 1 || period > n || newRate > 100) throw new Error('Cada cambio debe usar un periodo válido y una tasa entre 0 y 100%.');
     changes.set(period, newRate / 100);
   }
+  const payments = new Map<number, number>();
+  for (const entry of partialPayments.split(/[,;\n]+/).map((part) => part.trim()).filter(Boolean)) {
+    const match = /^(\d+)\s*:\s*(\d+(?:\.\d{1,2})?)$/.exec(entry);
+    if (!match) throw new Error('Escribe abonos por periodo como periodo:monto; por ejemplo, 7:500.');
+    const period = Number(match[1]), amount = Number(match[2]);
+    if (period < 1 || period > n || !Number.isFinite(amount) || amount <= 0) throw new Error('Cada abono necesita un periodo válido y un monto positivo.');
+    payments.set(period, (payments.get(period) ?? 0) + amount);
+  }
   const initialPeriodicRate = rate / periods;
   const initialPayment = initialPeriodicRate === 0 ? capital / n : capital * initialPeriodicRate / (1 - (1 + initialPeriodicRate) ** -n);
   let balance = capital;
@@ -93,7 +102,7 @@ export function calculateFinance(input: FinanceInput): CalculationResult {
     const payment = periodicRate === 0 ? balance / remaining : balance * periodicRate / (1 - (1 + periodicRate) ** -remaining);
     const initial = balance;
     const interest = balance * periodicRate;
-    const actual = Math.min(balance + interest, payment + extraPayment);
+    const actual = Math.min(balance + interest, payment + extraPayment + (payments.get(period) ?? 0));
     const principal = actual - interest;
     balance = Math.max(0, balance - principal);
     rows.push([period, `${(activeRate * 100).toFixed(2)}%`, money(initial), money(interest), money(principal), money(actual), money(balance)]);
@@ -101,5 +110,5 @@ export function calculateFinance(input: FinanceInput): CalculationResult {
   const total = rows.reduce((sum, row) => sum + Number(String(row[5]).replace(/[^\d.-]/g, '')), 0);
   const labels = rows.map((row) => String(row[0]));
   const asNumber = (value: string | number) => Number(String(value).replace(/[^\d.-]/g, ''));
-  return { title: 'Cuota inicial', value: money(initialPayment), subtitle: `${rows.length} pagos · Pago adicional: ${money(extraPayment)}`, steps: [...base, { title: 'Tasa periódica inicial', detail: `iₚ = ${rate} / ${periods} = ${(initialPeriodicRate * 100).toFixed(4)}%.` }, { title: 'Cuota recalculada', detail: 'En cada periodo se calcula P = saldo × iₚ / (1 − (1 + iₚ)^−plazos restantes). Cuando la tasa cambia, se recalcula la cuota para el saldo restante.' }, { title: 'Pago adicional', detail: `Se aplica ${money(extraPayment)} al capital después del interés en cada periodo. Total aproximado pagado: ${money(total)}.` }], table: { columns: ['Periodo', 'Tasa anual', 'Saldo inicial', 'Interés', 'Abono capital', 'Pago', 'Saldo final'], rows }, charts: [{ labels, values: rows.map((row) => asNumber(row[6])), label: 'Saldo pendiente por periodo', kind: 'line' }, { labels, values: rows.map((row) => asNumber(row[3])), label: 'Interés por periodo', kind: 'line' }, { labels, values: rows.map((row) => asNumber(row[4])), label: 'Abono a capital por periodo', kind: 'line' }] };
+  return { title: 'Cuota inicial', value: money(initialPayment), subtitle: `${rows.length} pagos · Pago adicional: ${money(extraPayment)}`, steps: [...base, { title: 'Tasa periódica inicial', detail: `iₚ = ${rate} / ${periods} = ${(initialPeriodicRate * 100).toFixed(4)}%.` }, { title: 'Cuota recalculada', detail: 'En cada periodo se calcula P = saldo × iₚ / (1 − (1 + iₚ)^−plazos restantes). Cuando la tasa cambia, se recalcula la cuota para el saldo restante.' }, { title: 'Abonos adicionales', detail: `Se aplica ${money(extraPayment)} recurrente por periodo${payments.size ? ` y abonos programados en los periodos ${[...payments.keys()].join(', ')}` : ''}. Total aproximado pagado: ${money(total)}.` }], table: { columns: ['Periodo', 'Tasa anual', 'Saldo inicial', 'Interés', 'Abono capital', 'Pago', 'Saldo final'], rows }, charts: [{ labels, values: rows.map((row) => asNumber(row[6])), label: 'Saldo pendiente por periodo', kind: 'line' }, { labels, values: rows.map((row) => asNumber(row[3])), label: 'Interés por periodo', kind: 'line' }, { labels, values: rows.map((row) => asNumber(row[4])), label: 'Abono a capital por periodo', kind: 'line' }] };
 }
