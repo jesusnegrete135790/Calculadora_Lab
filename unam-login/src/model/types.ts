@@ -10,13 +10,30 @@ export interface TableData {
   rows: Array<Array<string | number>>;
 }
 
+export interface ChartData {
+  labels: string[];
+  values: number[];
+  label: string;
+  kind?: 'line' | 'bar';
+  shadeThroughIndex?: number;
+}
+
+export interface SurfaceData {
+  x: number[];
+  y: number[];
+  z: number[][];
+  label: string;
+}
+
 export interface CalculationResult {
   title: string;
   value: string;
   subtitle?: string;
   steps: Step[];
   table?: TableData;
-  chart?: { labels: string[]; values: number[]; label: string; shadeThroughIndex?: number };
+  chart?: ChartData;
+  charts?: ChartData[];
+  surface3d?: SurfaceData;
   logicMap?: { rowLabels: string[]; columnLabels: string[]; cells: Array<{ value: number; minterm: number; groups: number[] }> };
   circuitTerms?: string[][];
   note?: string;

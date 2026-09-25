@@ -37,12 +37,16 @@ Las vistas recogen los datos y presentan resultados. Los controladores validan e
 
 | Módulo | Herramientas que funcionan en modo demostración |
 | --- | --- |
-| Lógica matemática | Tabla de verdad, simplificación por minterminos, mapa de Karnaugh y esquema de compuertas (hasta 4 variables) |
-| Matemáticas financieras | Interés simple/compuesto, valor actual, descuento comercial/racional/en serie, tasas equivalentes y amortización con abonos o cambios de tasa |
-| Matemáticas computacionales | Bisección, Newton–Raphson, interpolación de Lagrange/Newton, Euler, Euler mejorado y Runge–Kutta 4 |
+| Lógica matemática | Tabla de verdad, simplificación por minterminos, mapa de Karnaugh, circuito SVG simplificado y galería interactiva de compuertas AND, OR, NOT, NAND, NOR, XOR y XNOR (hasta 4 variables) |
+| Matemáticas financieras | Interés simple/compuesto, valor actual, descuento comercial/racional/en serie, tasas equivalentes y amortización con abonos o cambios de tasa; curvas adicionales y superficies 3D de sensibilidad a plazo y tasa |
+| Matemáticas computacionales | Bisección, Newton–Raphson, interpolación de Lagrange/Newton, Euler, Euler mejorado, Runge–Kutta 4 y gráficas 3D de funciones de dos variables; campo 3D de pendientes para EDO cuando el dominio lo permite |
 | Probabilidad y estadística | Medidas descriptivas, binomial, Poisson y normal acumulada |
 
-Cada resultado muestra pasos, tablas cuando corresponda, gráficas sencillas y exportación CSV de las tablas. El parser de funciones admite `x`, `y`, números, `+ - * / ^`, paréntesis, `sin`, `cos`, `tan`, `exp`, `ln`, `log`, `sqrt` y `abs`.
+Cada resultado muestra pasos, tablas cuando corresponda, gráficas 2D/3D y exportación CSV de las tablas. Para generar un informe completo, pulsa **Imprimir / PDF** en el resultado y elige **Guardar como PDF** en el cuadro de impresión del navegador. El informe incluye resultado, procedimiento, tablas, gráficas y circuito o mapa lógico cuando existan. Las superficies 3D se imprimen desde el ángulo visible al pulsar el botón.
+
+Las gráficas 3D se usan para funciones con dos variables independientes. Una función de una sola variable conserva su gráfica 2D; una EDO también puede mostrar la superficie de su campo de pendientes junto a la curva de solución. El parser de funciones admite `x`, `y`, números, `+ - * / ^`, paréntesis, `sin`, `cos`, `tan`, `exp`, `ln`, `log`, `sqrt` y `abs`.
+
+La interfaz incorpora el escudo de la UNAM y una página de **Derechos de autor** disponible desde el acceso y el menú. El proyecto se identifica como prototipo académico; antes de publicarlo corresponde al equipo revisar el permiso de uso de la identidad institucional.
 
 ## Integración pendiente con el backend
 

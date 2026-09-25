@@ -4,6 +4,7 @@ import { calculateFinance } from './finance';
 import { calculateNumeric, type NumericInput } from './numeric';
 import { calculateStatistics, type StatisticsInput } from './statistics';
 import { compileExpression } from './expression';
+import { createSurface } from './surface';
 
 describe('lógica matemática', () => {
   it('evalúa condicionales y simplifica cuatro o menos variables', () => {
@@ -11,6 +12,7 @@ describe('lógica matemática', () => {
     expect(result.table?.rows).toHaveLength(8);
     expect(result.table?.rows.filter((row) => row.at(-1) === 1)).toHaveLength(7);
     expect(result.value).toContain('C');
+    expect(result.circuitTerms?.length).toBeGreaterThan(0);
   });
   it('rechaza sintaxis ajena al lenguaje lógico', () => {
     expect(() => truthTable('A && alert(1)')).toThrow();
@@ -32,6 +34,12 @@ describe('matemáticas financieras', () => {
     expect(schedule.table?.rows[5][1]).toBe('10.00%');
     expect(schedule.table?.rows[6][1]).toBe('20.00%');
   });
+  it('ofrece curvas y una superficie de sensibilidad para interés compuesto', () => {
+    const result = calculateFinance({ method: 'compuesto', capital: 1000, annualRate: 12, years: 2, periods: 12, extraPayment: 0 });
+    expect(result.charts).toHaveLength(2);
+    expect(result.surface3d?.z[0][0]).toBe(1000);
+    expect(result.surface3d?.z.at(-1)?.at(-1)).toBeGreaterThan(1000);
+  });
 });
 
 const numericBase: NumericInput = { method: 'biseccion', expression: 'x^2-2', a: 1, b: 2, x0: 1.5, y0: 1, tolerance: 1e-8, iterations: 50, points: '0,1;1,3;2,7' };
@@ -48,6 +56,12 @@ describe('matemáticas computacionales', () => {
   it('resuelve una EDO con Runge-Kutta', () => {
     const result = calculateNumeric({ ...numericBase, method: 'runge-kutta', expression: 'y', a: 0, b: 1, y0: 1, iterations: 10 });
     expect(Number(result.value)).toBeCloseTo(Math.E, 4);
+  });
+  it('calcula una superficie de dos variables y valida su dominio', () => {
+    const result = calculateNumeric({ ...numericBase, method: 'superficie-3d', expression: 'x+y', a: -1, b: 1, yMin: -1, yMax: 1 });
+    expect(result.surface3d?.z).toHaveLength(25);
+    expect(result.surface3d?.z[12][12]).toBeCloseTo(0);
+    expect(() => createSurface(({ x, y }) => x + y, 1, -1, -1, 1)).toThrow();
   });
 });
 

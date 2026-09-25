@@ -120,6 +120,7 @@ export function truthTable(expression: string): CalculationResult {
     logicMap: { rowLabels, columnLabels, cells },
     circuitTerms: reduction.expression === '1 (tautología)' || reduction.expression === '0 (contradicción)' ? [] : reduction.expression.split(' ∨ ').map((term) => term.split(' ∧ ')),
     steps: [
+      { title: 'Expresión original', detail: expression },
       { title: 'Variables', detail: variables.join(', ') },
       { title: 'Evaluación', detail: `Se calcularon las ${rows.length} combinaciones posibles y los minterminos ${minterms.length ? minterms.join(', ') : 'ninguno'}.` },
       { title: 'Agrupación', detail: reduction.groups.length ? reduction.groups.map((group) => `${group.bits} cubre ${group.covers.join(', ')}`).join('; ') : 'No hay combinaciones verdaderas.' },
