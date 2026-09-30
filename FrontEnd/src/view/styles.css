@@ -54,3 +54,35 @@
   .table-scroll table,.gate-truth table{font-size:11px}
 }
 .copyright-card p a{color:#215d88;text-decoration:underline;text-underline-offset:3px}
+
+/* Créditos del equipo y lenguajes del proyecto. */
+.credits-section{max-width:850px;margin-top:24px}
+.credits-title{display:flex;align-items:center;gap:10px;margin-bottom:13px;color:#245778}
+.credits-title h2{font-size:19px;margin:0;color:#203b52}
+.credits-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.credits-team,.language-item{background:#fff;border:1px solid #e1e9f0;border-radius:11px}
+.credits-team{padding:20px 22px}
+.credits-team h3{font-size:15px;color:#1d4564;margin:0 0 13px}
+.credits-team ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.credits-team li{position:relative;padding-left:17px;color:#486276;font-size:13px;line-height:1.5}
+.credits-team li::before{content:"";position:absolute;left:0;top:.58em;width:6px;height:6px;border-radius:50%;background:#d7a84a}
+.language-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:11px}
+.language-item{display:grid;gap:5px;padding:14px 17px}
+.language-item strong{font-size:13px;color:#1d4564}
+.language-item span{font-size:12px;color:#698194;line-height:1.45}
+@media(max-width:650px){.credits-grid{grid-template-columns:1fr}.credits-team{padding:18px}.language-list{grid-template-columns:1fr}}
+@media print{.credits-team,.language-item{break-inside:avoid;page-break-inside:avoid}.credits-section{margin-top:8mm}}
+
+/* Identidad del laboratorio e instituciones en las pantallas de inicio. */
+.brand-crest{width:42px;height:42px}
+.topbar-crest{width:27px;height:27px}
+.access-crest{width:46px;height:46px}
+.access-card-icon img{width:42px;height:42px}
+.institutional-watermarks{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.institutional-watermarks img{position:absolute;display:block;object-fit:contain;filter:grayscale(1) invert(1) contrast(500%);mix-blend-mode:screen;user-select:none}
+.institutional-watermarks-access .institutional-watermark-unam{height:54%;max-height:460px;right:2%;top:3%;opacity:.16}
+.institutional-watermarks-access .institutional-watermark-fesc{height:31%;max-height:270px;right:13%;bottom:2%;opacity:.16}
+.institutional-watermarks-dashboard .institutional-watermark-unam{height:95%;right:27%;top:2%;opacity:.18}
+.institutional-watermarks-dashboard .institutional-watermark-fesc{height:92%;right:1%;top:4%;opacity:.2}
+@media(max-width:850px){.institutional-watermarks-access .institutional-watermark-unam{right:5%}.institutional-watermarks-access .institutional-watermark-fesc{right:-3%}}
+@media(max-width:600px){.institutional-watermarks-access .institutional-watermark-unam{height:95%;right:-10%;top:-20%;opacity:.12}.institutional-watermarks-access .institutional-watermark-fesc{height:68%;right:12%;bottom:-25%;opacity:.12}.institutional-watermarks-dashboard .institutional-watermark-unam{height:120%;right:9%;top:-12%;opacity:.1}.institutional-watermarks-dashboard .institutional-watermark-fesc{height:90%;right:-20%;top:15%;opacity:.12}}

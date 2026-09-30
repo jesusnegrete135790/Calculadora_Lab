@@ -50,9 +50,11 @@ Para generar un informe completo, pulsa **Imprimir / PDF** en el resultado y eli
 
 Las gráficas 3D se usan para funciones con dos variables independientes. Una función de una sola variable conserva su gráfica 2D; una EDO también puede mostrar la superficie de su campo de pendientes junto a la curva de solución. El parser de funciones admite `x`, `y`, números, `+ - * / ^`, paréntesis, `sin`, `cos`, `tan`, `exp`, `ln`, `log`, `sqrt` y `abs`.
 
-La interfaz incorpora el escudo de la UNAM y una página de **Derechos de autor** disponible desde el acceso y el menú. El proyecto se identifica como prototipo académico; antes de publicarlo corresponde al equipo revisar el permiso de uso de la identidad institucional.
+La interfaz incorpora el escudo de la UNAM y una página de **Derechos de autor** disponible desde el acceso y el menú. El equipo ya verificó el permiso de uso de la identidad institucional.
 
 ## Integración pendiente con el backend
+
+El backend está previsto en **Python con Django**; su implementación y contrato HTTP aún no forman parte de este repositorio de frontend.
 
 El script SQL no define endpoints HTTP ni estructura para los procedimientos detallados. El cliente HTTP en `src/model/api.ts` espera, **como contrato provisional**:
 
