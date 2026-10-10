@@ -37,6 +37,9 @@ export interface CalculationResult {
   logicMap?: { rowLabels: string[]; columnLabels: string[]; cells: Array<{ value: number; minterm: number; groups: number[] }> };
   circuitTerms?: string[][];
   note?: string;
+  polynomial?: string;
+  numericRows?: Array<{ numero: number; x?: number | string; y?: number | string; aproximado?: number | string; error?: number | string; k1?: number | string; k2?: number | string; k3?: number | string; k4?: number | string }>;
+  metrics?: { media: number | string; desviacion: number | string; asimetria: number | string; curtosis: number | string };
 }
 
 export interface HistoryRecord {
@@ -54,3 +57,50 @@ export interface UserSession {
   mode: 'demo' | 'api';
   token?: string;
 }
+
+export type EvaluationModule = 'logica' | 'finanzas' | 'computacionales' | 'estadistica';
+
+export interface EvaluationSummary {
+  id: number;
+  module: EvaluationModule;
+  title: string;
+  questionCount: number;
+}
+
+export interface EvaluationQuestion {
+  id: number;
+  order: number;
+  prompt: string;
+  options: Record<'A' | 'B' | 'C' | 'D', string>;
+}
+
+export interface EvaluationDetail extends EvaluationSummary {
+  questions: EvaluationQuestion[];
+}
+
+export interface EvaluationAnswer {
+  questionId: number;
+  option: 'A' | 'B' | 'C' | 'D';
+}
+
+export interface EvaluationAnswerResult {
+  questionId: number;
+  prompt: string;
+  selected: 'A' | 'B' | 'C' | 'D';
+  correctOption: 'A' | 'B' | 'C' | 'D';
+  isCorrect: boolean;
+  explanation: string;
+}
+
+export interface EvaluationAttempt {
+  id: number;
+  examId: number;
+  module: EvaluationModule;
+  title: string;
+  correct: number;
+  total: number;
+  score: number | string;
+  createdAt: string;
+  answers: EvaluationAnswerResult[];
+}
+

@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Abre `http://localhost:5173` para ver la interfaz de **inicio de sesión**. Pulsa **Iniciar sesión** para entrar directamente al laboratorio, incluso con los campos vacíos y sin backend. El formulario es una interfaz preparada para el equipo de backend; actualmente no valida ni envía credenciales. Las calculadoras realizan los cálculos en el navegador y el historial se guarda localmente (máximo 50 cálculos).
+Abre `http://localhost:5173` y selecciona **Entrar en modo demostración**. No hace falta un backend para probar las calculadoras. El historial se guarda solo en el navegador (máximo 50 cálculos).
 
 Para verificar:
 
@@ -43,6 +43,7 @@ Las vistas recogen los datos y presentan resultados. Los controladores validan e
 | Matemáticas financieras | Interés simple/compuesto, valor actual, descuento comercial/racional/en serie, tasas equivalentes y amortización con cambios de tasa, abonos recurrentes o extraordinarios por periodo; curvas adicionales y superficies 3D de sensibilidad a plazo y tasa |
 | Matemáticas computacionales | Bisección, Newton–Raphson, interpolación de Lagrange/Newton, Euler, Euler mejorado, Runge–Kutta 4 y gráficas 3D de funciones de dos variables; campo 3D de pendientes para EDO cuando el dominio lo permite |
 | Probabilidad y estadística | Medidas descriptivas, tabla de frecuencias absolutas, relativas y acumuladas, binomial, Poisson y normal acumulada |
+| Evaluaciones | Cinco preguntas de opción múltiple por área, calificación y revisión de intentos guardados por cuenta |
 
 Cada resultado muestra pasos, tablas cuando corresponda, gráficas 2D/3D y exportación CSV de las tablas. Las curvas, barras y áreas usan **Apache ECharts 6** con renderizado SVG; las superficies interactivas usan **ECharts-GL 2** (WebGL). El circuito y mapa lógico conservan su representación SVG como diagramas. Ambas versiones están fijadas en `package.json` y las bibliotecas de gráficas se cargan cuando aparece un resultado.
 
@@ -52,31 +53,17 @@ Las gráficas 3D se usan para funciones con dos variables independientes. Una fu
 
 La interfaz incorpora el escudo de la UNAM y una página de **Derechos de autor** disponible desde el acceso y el menú. El equipo ya verificó el permiso de uso de la identidad institucional.
 
-## Integración pendiente con el backend
+## Integración con FastAPI y SQL Server
 
-El backend está previsto en **Python con Django**; su implementación y contrato HTTP aún no forman parte de este repositorio de frontend.
+El backend completo está en `../backend`. Configura `VITE_API_URL=http://localhost:8000/api` copiando `.env.example` a `.env.local` y sigue [su guía](../backend/README.md).
 
-El script SQL no define endpoints HTTP ni estructura para los procedimientos detallados. El cliente HTTP en `src/model/api.ts` espera, **como contrato provisional**:
+El formulario permite crear una cuenta e iniciar sesión. El JWT se conserva en sessionStorage, se verifica contra `/auth/me` y se elimina al salir o caducar. En modo de cuenta, los algoritmos existentes muestran su resultado y luego lo envían a la API. Un mensaje indica guardado correcto o el error; **Historial** recupera exclusivamente los cálculos de la cuenta, incluidos procedimientos, gráficos, tablas, Karnaugh y circuitos. **Evaluaciones** obtiene preguntas del backend, envía respuestas para calificarlas en el servidor y recupera intentos anteriores de la cuenta.
 
-```text
-POST {VITE_API_BASE_URL}/auth/login
-  entrada:  { "correo": "...", "contrasena": "..." }
-  salida:   { "token": "...", "usuario": { "nombre": "...", "correo": "..." } }
+En demostración, las calculadoras siguen funcionando sin API y conservan el historial local. Ese historial no se importa automáticamente a una cuenta. El asistente requiere login y configuración del proveedor en el backend; sus consultas anteriores se muestran en la misma página. Las evaluaciones requieren una cuenta porque sus preguntas, respuestas y calificaciones se guardan en SQL Server.
 
-POST {VITE_API_BASE_URL}/asistente/preguntas
-  entrada:  { "pregunta": "...", "moduloRelacionado": "..." }
-  salida:   { "respuesta": "..." }
-```
+Se añadieron metadatos para persistencia (`metrics`, `numericRows`, `polynomial`) y un flujo de evaluaciones conectado a la API, manteniendo los cálculos matemáticos existentes.
 
-El formulario de acceso siempre está visible e incluye correo, contraseña, mostrar/ocultar contraseña y aviso de bloqueo de mayúsculas. Conserva estados opcionales de carga y error para la integración futura. En esta entrega de frontend, **Iniciar sesión** abre una sesión local de demostración sin exigir campos, validar su formato ni llamar a la API. Los valores del formulario no se usan para conceder acceso.
-
-Para la integración futura, copia `.env.example` a `.env.local`, define `VITE_API_BASE_URL` con la URL del backend y reinicia Vite. Configurar esa variable conecta el cliente HTTP y el asistente, pero no cambia el acceso directo del formulario. El equipo de backend deberá reemplazar el acceso local de `src/controller/useSessionController.ts`, conectar el formulario con el cliente de autenticación y aplicar las validaciones correspondientes. El cliente HTTP provisional está en `src/model/api.ts`; el contrato y CORS deben adaptarse al backend definitivo. La sesión actual permanece en memoria y termina al recargar o cerrar sesión. El frontend no guarda contraseñas ni tokens en el almacenamiento del navegador.
-
-Estos endpoints son una propuesta de integración. El frontend no consulta SQL directamente. La gestión de cuentas y la recuperación de contraseñas quedan a cargo del equipo de backend; la pantalla indica al usuario que contacte al administrador para recibir ayuda con el acceso.
-
-Funciones del bosquejo que aún requieren diseño o servicios adicionales: doble división sintética, factores cuadráticos, explicaciones IA y evaluaciones. La versión nueva del SQL y su diagrama ya no incluyen tablas de exámenes. La pantalla de evaluaciones informa que esta función queda pendiente de una definición de alcance y API.
-
-Consulta [el impacto del SQL actualizado](docs/INTEGRACION_SQL_2026-09-24.md) para ver los cambios de cada tabla y los acuerdos necesarios con el equipo de backend. El frontend no consulta SQL Server: los cálculos locales siguen siendo una demostración hasta recibir el contrato HTTP definitivo.
+La documentación del SQL anterior en `docs/INTEGRACION_SQL_2026-09-24.md` es histórica. El contrato actual y los cambios están en [el diagnóstico de integración](../docs/DIAGNOSTICO_INTEGRACION.md).
 
 ## Decisiones de cálculo
 

@@ -8,21 +8,22 @@ import AssistantPage from './pages/AssistantPage';
 import EvaluationPage from './pages/EvaluationPage';
 import CopyrightPage from './pages/CopyrightPage';
 import Shell from './components/Shell';
+import { SessionContext } from '../model/sessionContext';
 
 export default function App() {
   const auth = useSessionController();
-  if (!auth.session) return <Routes><Route path="/derechos" element={<CopyrightPage/>}/><Route path="*" element={<AccessPage signIn={auth.signIn} />}/></Routes>;
+  if (!auth.session) return <Routes><Route path="/derechos" element={<CopyrightPage/>}/><Route path="*" element={<AccessPage enterDemo={auth.enterDemo} signIn={auth.signIn} signUp={auth.signUp} loading={auth.loading} error={auth.error} />}/></Routes>;
   return (
-    <Shell session={auth.session} signOut={auth.signOut}>
+    <SessionContext.Provider value={auth.session}><Shell session={auth.session} signOut={auth.signOut}>
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/laboratorio/:module" element={<LaboratoryPage />} />
         <Route path="/historial" element={<HistoryPage />} />
         <Route path="/asistente" element={<AssistantPage token={auth.session.token} />} />
-        <Route path="/evaluaciones" element={<EvaluationPage />} />
+        <Route path="/evaluaciones" element={<EvaluationPage token={auth.session.token} />} />
         <Route path="/derechos" element={<CopyrightPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Shell>
+    </Shell></SessionContext.Provider>
   );
 }

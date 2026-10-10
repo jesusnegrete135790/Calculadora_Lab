@@ -23,7 +23,7 @@ const languages = [
   { name: 'JavaScript', use: 'Ejecución en el navegador' },
   { name: 'HTML', use: 'Estructura de las páginas' },
   { name: 'CSS', use: 'Diseño y presentación' },
-  { name: 'Python', use: 'Backend previsto con Django' },
+  { name: 'Python', use: 'API y persistencia con FastAPI' },
   { name: 'SQL', use: 'Esquema de base de datos SQL Server' },
 ];
 

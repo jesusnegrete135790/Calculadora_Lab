@@ -26,7 +26,7 @@ export default function FinanceView() {
   const requiresCapital = input.method !== 'tasa-equivalente';
   const requiresTime = !['descuento-serie', 'tasa-equivalente'].includes(input.method);
   const requiresPeriods = ['compuesto', 'valor-actual', 'tasa-equivalente', 'amortizacion'].includes(input.method);
-  function submit(event: FormEvent) { event.preventDefault(); controller.run(names[input.method], input); }
+  function submit(event: FormEvent) { event.preventDefault(); void controller.run(names[input.method], input); }
 
   return <div className="workspace-grid">
     <section className="form-card">
@@ -48,10 +48,10 @@ export default function FinanceView() {
           <TextField label="Cambios de tasa por periodo (opcional)" value={input.rateChanges ?? ''} onChange={(value) => update('rateChanges', value)} placeholder="7:15, 13:10" hint="Periodo:tasa anual; 7:15 cambia a 15% en el pago 7."/>
           <TextField label="Abonos extraordinarios por periodo (opcional)" value={input.partialPayments ?? ''} onChange={(value) => update('partialPayments', value)} placeholder="7:500, 13:1000" hint="Periodo:monto; 7:500 agrega $500 al pago 7 y reduce el saldo."/>
         </>}
-        <button className="button button-primary">Calcular <ArrowRight size={18}/></button>
+        <button className="button button-primary" disabled={controller.saving}>Calcular <ArrowRight size={18}/></button>
       </form>
       <div className="form-tip"><Info size={17}/><span>La tasa se interpreta como anual salvo en descuentos en serie, donde cada porcentaje se aplica de forma sucesiva.</span></div>
     </section>
-    <ResultPanel result={controller.result} error={controller.error} reset={controller.reset}/>
+    <div>{(controller.saving || controller.saveStatus) && <p className="no-print" role="status">{controller.saving ? "Guardando…" : controller.saveStatus}</p>}<ResultPanel result={controller.result} error={controller.error} reset={controller.reset}/></div>
   </div>;
 }

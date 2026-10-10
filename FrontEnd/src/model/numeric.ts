@@ -65,7 +65,7 @@ export function calculateNumeric(input: NumericInput): CalculationResult {
       const first = Math.min(...points.map(([x]) => x)), last = Math.max(...points.map(([x]) => x));
       const labels = Array.from({ length: 41 }, (_, index) => first + (last - first) * index / 40);
       const chart = { labels: labels.map((x) => String(fmt(x))), values: labels.map((x) => points.reduce((sum, [xi, yi], i) => sum + yi * points.reduce((product, [xj], j) => j === i ? product : product * (x - xj) / (xi - xj), 1), 0)), label: 'Polinomio interpolado', kind: 'line' as const };
-      return { title: `P(${fmt(x0)})`, value: String(fmt(value)), subtitle: 'Interpolación de Lagrange', steps: [{ title: 'Base de Lagrange', detail: 'Lᵢ(x) = ∏(x − xⱼ)/(xᵢ − xⱼ) para j ≠ i.' }, { title: 'Polinomio evaluado', detail: `P(${fmt(x0)}) = Σ yᵢLᵢ(${fmt(x0)}) = ${fmt(value)}.` }], table: { columns: ['i', 'xᵢ', 'yᵢ', `Lᵢ(${fmt(x0)})`, 'Aporte'], rows }, chart };
+      return { polynomial: points.map(([xi, yi], i) => `${yi}*(${points.filter((_, j) => j !== i).map(([xj]) => `(x-(${xj}))/(${xi}-(${xj}))`).join('*')})`).join(' + '), title: `P(${fmt(x0)})`, value: String(fmt(value)), subtitle: 'Interpolación de Lagrange', steps: [{ title: 'Base de Lagrange', detail: 'Lᵢ(x) = ∏(x − xⱼ)/(xᵢ − xⱼ) para j ≠ i.' }, { title: 'Polinomio evaluado', detail: `P(${fmt(x0)}) = Σ yᵢLᵢ(${fmt(x0)}) = ${fmt(value)}.` }], table: { columns: ['i', 'xᵢ', 'yᵢ', `Lᵢ(${fmt(x0)})`, 'Aporte'], rows }, chart };
     }
     const divided = points.map(([, y]) => y);
     const coefficients = [divided[0]];
@@ -82,7 +82,7 @@ export function calculateNumeric(input: NumericInput): CalculationResult {
     const first = Math.min(...points.map(([x]) => x)), last = Math.max(...points.map(([x]) => x));
     const labels = Array.from({ length: 41 }, (_, index) => first + (last - first) * index / 40);
     const chart = { labels: labels.map((x) => String(fmt(x))), values: labels.map((x) => coefficients.reduce((sum, coefficient, index) => sum + coefficient * points.slice(0, index).reduce((product, [xi]) => product * (x - xi), 1), 0)), label: 'Polinomio interpolado', kind: 'line' as const };
-    return { title: `P(${fmt(x0)})`, value: String(fmt(value)), subtitle: 'Interpolación de Newton', steps: [{ title: 'Diferencias divididas', detail: 'Se calculan los coeficientes f[x₀,…,xᵢ].' }, { title: 'Evaluación', detail: `P(${fmt(x0)}) = ${fmt(value)}.` }], table: { columns: ['Orden', 'Coeficiente', 'Producto', 'Aporte'], rows }, chart };
+    return { polynomial: coefficients.map((coefficient, i) => `${coefficient}${points.slice(0,i).map(([xi]) => `*(x-(${xi}))`).join('')}`).join(' + '), title: `P(${fmt(x0)})`, value: String(fmt(value)), subtitle: 'Interpolación de Newton', steps: [{ title: 'Diferencias divididas', detail: 'Se calculan los coeficientes f[x₀,…,xᵢ].' }, { title: 'Evaluación', detail: `P(${fmt(x0)}) = ${fmt(value)}.` }], table: { columns: ['Orden', 'Coeficiente', 'Producto', 'Aporte'], rows }, chart };
   }
 
   if (method === 'euler' || method === 'euler-mejorado' || method === 'runge-kutta') {
@@ -92,21 +92,26 @@ export function calculateNumeric(input: NumericInput): CalculationResult {
     let x = a;
     let y = y0;
     const rows: Array<Array<string | number>> = [[0, fmt(x), fmt(y), '—']];
+    const numericRows: NonNullable<CalculationResult['numericRows']> = [{ numero: 0, x, y }];
     for (let i = 1; i <= iterations; i++) {
       const slope = f({ x, y });
+      const detail: { numero: number; k1: number; k2?: number; k3?: number; k4?: number } = { numero: i, k1: slope };
       if (method === 'euler') y += h * slope;
       else if (method === 'euler-mejorado') {
         const predictor = y + h * slope;
-        y += h * (slope + f({ x: x + h, y: predictor })) / 2;
+        detail.k2 = f({ x: x + h, y: predictor });
+        y += h * (slope + detail.k2) / 2;
       } else {
         const k1 = slope;
         const k2 = f({ x: x + h / 2, y: y + h * k1 / 2 });
         const k3 = f({ x: x + h / 2, y: y + h * k2 / 2 });
         const k4 = f({ x: x + h, y: y + h * k3 });
+        Object.assign(detail, { k1, k2, k3, k4 });
         y += h * (k1 + 2 * k2 + 2 * k3 + k4) / 6;
       }
       x = a + i * h;
       if (!Number.isFinite(y)) throw new Error('El método produjo un valor no finito. Revisa función, intervalo y pasos.');
+      numericRows.push({ ...detail, x, y, aproximado: y });
       rows.push([i, fmt(x), fmt(y), fmt(slope)]);
     }
     const name = { euler: 'Euler', 'euler-mejorado': 'Euler mejorado', 'runge-kutta': 'Runge–Kutta de orden 4' }[method];
@@ -114,7 +119,7 @@ export function calculateNumeric(input: NumericInput): CalculationResult {
     const low = Math.min(...approximations), high = Math.max(...approximations), padding = Math.max((high - low) * .3, .5);
     let surface3d;
     try { surface3d = createSurface(f, a, b, low - padding, high + padding, 19, `y′ = ${expression}`); } catch { /* Algunas funciones no están definidas en toda la vecindad de la trayectoria. */ }
-    return { title: `y(${fmt(b)}) aproximado`, value: String(fmt(y)), subtitle: name, steps: [{ title: 'Modelo', detail: `y′ = ${expression}, y(${a}) = ${y0}.` }, { title: 'Paso', detail: `h = (${b} − ${a}) / ${iterations} = ${fmt(h)}.` }, { title: 'Método', detail: method === 'euler' ? 'yₙ₊₁ = yₙ + h·f(xₙ,yₙ).' : method === 'euler-mejorado' ? 'Se promedian las pendientes inicial y predictora.' : 'Se ponderan k₁, k₂, k₃ y k₄ en cada paso.' }], table: { columns: ['Paso', 'x', 'y', 'Pendiente inicial'], rows }, chart: { labels: rows.map((row) => String(row[1])), values: approximations, label: 'Solución aproximada', kind: 'line' }, surface3d, note: surface3d ? 'La superficie 3D representa el campo y′ = f(x,y); la curva 2D representa la solución aproximada.' : undefined };
+    return { numericRows, title: `y(${fmt(b)}) aproximado`, value: String(fmt(y)), subtitle: name, steps: [{ title: 'Modelo', detail: `y′ = ${expression}, y(${a}) = ${y0}.` }, { title: 'Paso', detail: `h = (${b} − ${a}) / ${iterations} = ${fmt(h)}.` }, { title: 'Método', detail: method === 'euler' ? 'yₙ₊₁ = yₙ + h·f(xₙ,yₙ).' : method === 'euler-mejorado' ? 'Se promedian las pendientes inicial y predictora.' : 'Se ponderan k₁, k₂, k₃ y k₄ en cada paso.' }], table: { columns: ['Paso', 'x', 'y', 'Pendiente inicial'], rows }, chart: { labels: rows.map((row) => String(row[1])), values: approximations, label: 'Solución aproximada', kind: 'line' }, surface3d, note: surface3d ? 'La superficie 3D representa el campo y′ = f(x,y); la curva 2D representa la solución aproximada.' : undefined };
   }
 
   const f = compileExpression(expression);
@@ -155,3 +160,4 @@ export function calculateNumeric(input: NumericInput): CalculationResult {
   const profile = functionProfile(f, x - radius, x + radius);
   return { title: 'Raíz aproximada', value: String(fmt(x)), subtitle: `${rows.length} iteraciones · Newton–Raphson`, steps: [{ title: 'Función', detail: `f(x) = ${expression}.` }, { title: 'Valor inicial', detail: `x₀ = ${x0}.` }, { title: 'Derivada', detail: 'f′(x) se aproxima mediante diferencia central.' }, { title: 'Iteración', detail: 'xₙ₊₁ = xₙ − f(xₙ)/f′(xₙ).' }], table: { columns: ['n', 'xₙ', 'f(xₙ)', 'f′(xₙ)', 'xₙ₊₁', 'Cambio'], rows }, charts: [...(profile ? [profile] : []), { labels: rows.map((row) => String(row[0])), values: rows.map((row) => Number(row[5])), label: 'Cambio entre iteraciones', kind: 'line' }] };
 }
+

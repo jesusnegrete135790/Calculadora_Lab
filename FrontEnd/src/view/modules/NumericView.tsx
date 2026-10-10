@@ -40,7 +40,7 @@ export default function NumericView() {
     }));
     controller.reset();
   }
-  function submit(event: FormEvent) { event.preventDefault(); controller.run(names[input.method], input); }
+  function submit(event: FormEvent) { event.preventDefault(); void controller.run(names[input.method], input); }
 
   return <div className="workspace-grid">
     <section className="form-card">
@@ -58,10 +58,10 @@ export default function NumericView() {
           {ode && <NumberField label="Valor inicial y₀" value={input.y0} onChange={(value) => update('y0', value)}/>}
           {!surface && <div className="field-row"><NumberField label={ode ? 'Número de pasos' : 'Máximo de iteraciones'} value={input.iterations} onChange={(value) => update('iterations', value)} step="1" min={1} max={200}/>{!ode && <NumberField label="Tolerancia" value={input.tolerance} onChange={(value) => update('tolerance', value)} min={0}/>}</div>}
         </>}
-        <button className="button button-primary">{surface ? 'Generar superficie' : 'Calcular'} <ArrowRight size={18}/></button>
+        <button className="button button-primary" disabled={controller.saving}>{surface ? 'Generar superficie' : 'Calcular'} <ArrowRight size={18}/></button>
       </form>
       <div className="form-tip">{surface ? <Box size={17}/> : <Info size={17}/>}<span>{surface ? 'La gráfica 3D corresponde a una función de dos variables. Puedes girarla y cambiar su elevación.' : <>Ejemplos: <code>x^3-x-2</code> para raíces; <code>x+y</code> para ecuaciones diferenciales.</>}</span></div>
     </section>
-    <ResultPanel result={controller.result} error={controller.error} reset={controller.reset}/>
+    <div>{(controller.saving || controller.saveStatus) && <p className="no-print" role="status">{controller.saving ? "Guardando…" : controller.saveStatus}</p>}<ResultPanel result={controller.result} error={controller.error} reset={controller.reset}/></div>
   </div>;
 }

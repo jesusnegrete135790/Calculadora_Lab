@@ -11,7 +11,7 @@ const mainLinks = [
   { to: '/laboratorio/estadistica', label: 'Probabilidad y estadística', icon: ChartNoAxesCombined },
 ];
 const extraLinks = [
-  { to: '/historial', label: 'Historial local', icon: Clock3 },
+  { to: '/historial', label: 'Historial', icon: Clock3 },
   { to: '/asistente', label: 'Asistente de dudas', icon: MessageCircle },
   { to: '/evaluaciones', label: 'Evaluaciones', icon: GraduationCap },
 ];

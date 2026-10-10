@@ -76,21 +76,6 @@
 /* Identidad del laboratorio e instituciones en las pantallas de inicio. */
 .brand-crest{width:42px;height:42px}
 .topbar-crest{width:27px;height:27px}
-.access-field{display:grid;gap:8px}
-.access-form label{color:#304b61;font-weight:700}
-.access-form .input-icon input{height:50px;background:#fff}
-.access-password input{padding-right:51px}
-.access-password-toggle{position:absolute;right:5px;top:5px;width:40px;height:40px;display:grid;place-items:center;background:transparent;border:0;border-radius:6px;color:#607f94}
-.access-password-toggle:hover{background:#edf3f7;color:#164d77}
-.access-password-toggle svg{position:static;transform:none;color:inherit}
-.access-form input:disabled,.access-password-toggle:disabled{opacity:.65;cursor:wait}
-.access-field-hint{font-size:11px;color:#8a641e;margin:0}
-.access-error{margin:0;line-height:1.6}
-.access-submit{min-height:48px;margin-top:5px}
-.access-account-note{font-size:11px;line-height:1.7;color:#718595;text-align:center;margin:24px 0 0;padding-top:20px;border-top:1px solid #dde6ec}
-.access-spinner{animation:access-spin 1s linear infinite}
-@keyframes access-spin{to{transform:rotate(360deg)}}
-@media(max-width:600px){.access-form .input-icon input{font-size:16px}}
 .access-crest{width:46px;height:46px}
 .access-card-icon img{width:42px;height:42px}
 .institutional-watermarks{position:absolute;inset:0;overflow:hidden;pointer-events:none}
@@ -101,3 +86,4 @@
 .institutional-watermarks-dashboard .institutional-watermark-fesc{height:92%;right:1%;top:4%;opacity:.2}
 @media(max-width:850px){.institutional-watermarks-access .institutional-watermark-unam{right:5%}.institutional-watermarks-access .institutional-watermark-fesc{right:-3%}}
 @media(max-width:600px){.institutional-watermarks-access .institutional-watermark-unam{height:95%;right:-10%;top:-20%;opacity:.12}.institutional-watermarks-access .institutional-watermark-fesc{height:68%;right:12%;bottom:-25%;opacity:.12}.institutional-watermarks-dashboard .institutional-watermark-unam{height:120%;right:9%;top:-12%;opacity:.1}.institutional-watermarks-dashboard .institutional-watermark-fesc{height:90%;right:-20%;top:15%;opacity:.12}}
+.evaluation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.evaluation-exam{display:flex;flex-direction:column;justify-content:space-between;gap:15px}.evaluation-active{max-width:980px;margin:auto}.evaluation-active>.text-button{margin-bottom:14px}.evaluation-form{display:grid;gap:17px}.evaluation-question{min-width:0;margin:0;padding:18px;border:1px solid #e4ebf0;border-radius:10px}.evaluation-question legend{padding:0 5px;font-size:13px;font-weight:800;color:#243e55}.evaluation-options{display:grid;gap:8px;margin-top:8px}.evaluation-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e0e8ef;border-radius:8px;color:#526b7e;font-size:12px;cursor:pointer}.evaluation-option:hover,.evaluation-option.selected{border-color:#6b9ab6;background:#f2f8fb}.evaluation-option input{accent-color:#164d77}.evaluation-option strong{color:#1d5b83}.evaluation-option span{flex:1}.evaluation-saved{display:flex;align-items:center;gap:8px;color:#22724c;background:#eaf7f0;border-radius:8px;padding:11px 14px;font-size:12px}.evaluation-score{display:flex;justify-content:space-between;align-items:center;margin:16px 0;padding:17px 20px;background:#edf5f8;border-radius:9px;color:#174f73}.evaluation-score strong{font-size:18px}.evaluation-review{margin:10px 0 0;padding:10px 12px;border-radius:7px;font-size:11px;line-height:1.6}.evaluation-review.correct{color:#216b4c;background:#edf8f1}.evaluation-review.incorrect{color:#8b5b21;background:#fff7e9}.evaluation-history{margin-top:35px}.evaluation-history .section-header h2{margin:0}.evaluation-attempt{cursor:default}@media(max-width:850px){.evaluation-grid{grid-template-columns:1fr}}
