@@ -15,6 +15,7 @@ app/repositories.py        Consultas por propietario y borrado relacionado
 app/routes.py              Auth, usuarios, módulos, historial y asistente
 app/services/calculations.py  Mapeo y transacción de cada cálculo
 app/services/ai_service.py    Interfaz AIProvider y adaptador Gemini
+app/services/users.py         Gestión transaccional de cuentas y permisos
 sql/                       Creación y migración del esquema original
 tools/                     Ejecutores de migración y actualización de hashes
 tests/                     Pruebas aisladas y contra SQL Server
@@ -88,9 +89,12 @@ python tools/apply_sql.py 002_upgrade_existing.sql
 
 # Agregar el banco y los resultados de evaluaciones:
 python tools/apply_sql.py 003_evaluations.sql
+
+# Agregar estado de cuentas y revocación de sesiones:
+python tools/apply_sql.py 004_user_management.sql
 ```
 
-En una instalación nueva ejecuta los tres scripts. El primero crea solo tablas faltantes. El segundo agrega columnas e índices y amplía los textos; no borra tablas ni registros y ejecuta los cambios dentro de una transacción. El tercero agrega el catálogo y los intentos de evaluación con sus respuestas; es aditivo y puede ejecutarse de nuevo.
+En una instalación nueva ejecuta los cuatro scripts. El primero crea solo tablas faltantes. El segundo agrega columnas e índices y amplía los textos; no borra tablas ni registros y ejecuta los cambios dentro de una transacción. El tercero agrega el catálogo y los intentos de evaluación con sus respuestas; es aditivo y puede ejecutarse de nuevo.
 
 Cambios respecto del SQL original:
 
@@ -151,7 +155,7 @@ El cliente central está en `FrontEnd/src/model/api.ts`; admite la variable prov
 | `GET /api/evaluaciones/historial` | Intentos y calificaciones de la cuenta |
 | `GET /api/evaluaciones/intentos/{id}` | Revisión de intento propio, con explicación |
 
-Registro y login devuelven `{token, token_type:"bearer", usuario:{id,nombre,correo,rol}}`. Usa `Authorization: Bearer <token>` en rutas protegidas. Swagger permite ingresar ese token con **Authorize**. El token se conserva en `sessionStorage`, se elimina al cerrar sesión y un 401 devuelve al acceso. El cierre de sesión es del cliente: el JWT emitido sigue siendo válido hasta su expiración, como corresponde al alcance solicitado.
+Registro y login devuelven `{token, token_type:"bearer", usuario:{id,nombre,correo,rol,activo}}`. Usa `Authorization: Bearer <token>` en rutas protegidas. Swagger permite ingresar ese token con **Authorize**. El token se conserva en `sessionStorage`, se elimina al cerrar sesión y un 401 devuelve al acceso. El cierre de sesión es del cliente. Cambiar la contraseña, el rol o el estado de una cuenta incrementa su versión de token y revoca todas sus sesiones anteriores.
 
 Los POST de cálculos reciben `{method, input, result}`. `method` es el nombre visible; `input` conserva los tipos del frontend (la lógica usa una cadena). `result` es `CalculationResult`, con sus tablas y visualizaciones; las EDO requieren `numericRows`, y las interpolaciones `polynomial`. La descriptiva añade `metrics`. Swagger muestra todos los campos y sus límites.
 
@@ -242,3 +246,32 @@ npm run build
 | Advertencia de chunks grandes | Proviene de ECharts/ECharts-GL existentes; no es un fallo de compilación |
 
 Referencias de implementación: [FastAPI JWT](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/), [SQLAlchemy SQL Server 2.0](https://docs.sqlalchemy.org/en/20/dialects/mssql.html), [Gemini API](https://ai.google.dev/api).
+
+## Gestor de usuarios y roles
+
+Aplica `004_user_management.sql` antes de arrancar esta versión; añade `Usuarios.Activo` y `Usuarios.VersionToken`, conserva las cuentas existentes activas y permite ejecutar de nuevo la migración. No se modifica la base automáticamente al arrancar.
+
+El catálogo actual admite exclusivamente `Usuario` y `Administrador`; el gestor consulta esos roles en el backend. El registro público sigue asignando siempre `Usuario`. Para habilitar **el primer administrador**, registra una cuenta y ejecuta desde una terminal con acceso autorizado a la base:
+
+```powershell
+python tools/bootstrap_admin.py --email tu-correo@example.com
+```
+
+La herramienta exige una cuenta activa ya registrada y se niega a operar cuando existe un administrador activo. Después vuelve a iniciar sesión. Los demás administradores se asignan desde el gestor.
+
+La opción **Gestor de usuarios** aparece en el lateral: solo se habilita para una sesión real con rol `Administrador` verificado. Se conserva el ID y el rol del login, y `/auth/me` actualiza el perfil al restaurar la sesión, al recuperar el foco, cada minuto y cuando el servidor rechaza permisos. Las cuentas normales y la demostración ven la opción desactivada; la ruta directa también está protegida. La autorización efectiva ocurre siempre en el backend, consultando la base en cada petición.
+
+| Ruta administrativa | Acción |
+|---|---|
+| `GET /api/usuarios?offset=0&limit=50&q=&rol=&activo=` | Buscar por nombre/correo, filtrar por rol/estado y paginar |
+| `GET /api/usuarios/roles` | Roles admitidos por el backend |
+| `GET /api/usuarios/{id}` | Consultar una cuenta |
+| `POST /api/usuarios` | Crear con `{nombre,correo,contrasena,rol,activo}` |
+| `PATCH /api/usuarios/{id}` | Actualizar uno o varios de esos campos; omitir contraseña para conservarla |
+| `DELETE /api/usuarios/{id}` | Eliminar solo si no tiene registros relacionados |
+
+Todas requieren `Administrador`. Las contraseñas se almacenan con Argon2 y nunca se devuelven. Los correos duplicados generan 409; los roles desconocidos, campos nulos y contraseñas menores de 10 caracteres generan 422. Las cuentas desactivadas no pueden iniciar sesión ni usar tokens existentes. React admite PATCH por CORS.
+
+Un administrador no puede eliminarse, desactivarse ni quitarse su propio rol. Debe permanecer al menos un administrador activo. Las escrituras administrativas bloquean el conjunto de administradores dentro de la transacción en SQL Server y vuelven a verificar al actor. Cambiar rol, estado o contraseña invalida los tokens anteriores, incluso si después se reactiva la cuenta. Los tokens emitidos antes de la migración funcionan mientras su versión sea cero.
+
+La eliminación conserva las relaciones `NO ACTION`: si hay cálculos, consultas al asistente o intentos de evaluación, devuelve 409 sin borrar datos. Usa **Editar → Desactivada** para retirar el acceso conservando el historial. El frontend solicita confirmación antes de eliminar.

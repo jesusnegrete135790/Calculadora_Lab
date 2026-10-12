@@ -56,7 +56,15 @@ export interface UserSession {
   email?: string;
   mode: 'demo' | 'api';
   token?: string;
+  id?: number;
+  role?: UserRole;
+  roleVerified?: boolean;
 }
+
+export type UserRole = 'Usuario' | 'Administrador';
+export interface ManagedUser { id: number; nombre: string; correo: string; rol: UserRole; activo: boolean; }
+export interface UserCreate { nombre: string; correo: string; contrasena: string; rol: UserRole; activo: boolean; }
+export type UserUpdate = Partial<UserCreate>;
 
 export type EvaluationModule = 'logica' | 'finanzas' | 'computacionales' | 'estadistica';
 

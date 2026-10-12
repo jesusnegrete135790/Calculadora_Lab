@@ -9,7 +9,7 @@ from app.core.config import get_settings
 from app.database import database_url
 
 parser = argparse.ArgumentParser(description='Aplicar esquema SQL Server del Laboratorio')
-parser.add_argument('script', choices=['001_create_database.sql', '002_upgrade_existing.sql', '003_evaluations.sql'])
+parser.add_argument('script', choices=['001_create_database.sql', '002_upgrade_existing.sql', '003_evaluations.sql', '004_user_management.sql'])
 args = parser.parse_args()
 settings = get_settings()
 if args.script.startswith('001'):

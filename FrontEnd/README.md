@@ -6,12 +6,15 @@ La interfaz usa únicamente **Varela Round**. La fuente se distribuye dentro del
 
 ## Ejecutar
 
-```bash
+```powershell
+Copy-Item .env.example .env.local
 npm install
 npm run dev
 ```
 
-Abre `http://localhost:5173` y selecciona **Entrar en modo demostración**. No hace falta un backend para probar las calculadoras. El historial se guarda solo en el navegador (máximo 50 cálculos).
+Abre `http://localhost:5173`. Con `.env.local` configurado se muestran **Iniciar sesión** y **Crear una cuenta**; requieren el backend en `http://localhost:8000`. También puedes seleccionar **Entrar en modo demostración** para probar las calculadoras sin backend. El historial de demostración se guarda solo en el navegador (máximo 50 cálculos).
+
+Si solo aparece el botón de demostración, falta `VITE_API_URL`: copia `.env.example` a `.env.local` y reinicia `npm run dev`. Vite no carga `.env.example` automáticamente. Consulta [la guía del backend](../backend/README.md) para configurar la API y SQL Server.
 
 Para verificar:
 

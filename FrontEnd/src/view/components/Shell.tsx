@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { BookOpen, BrainCircuit, Calculator, ChartNoAxesCombined, ChevronLeft, Clock3, GraduationCap, LayoutDashboard, LogOut, Menu, MessageCircle, Sigma, X } from 'lucide-react';
+import { BookOpen, BrainCircuit, Calculator, ChartNoAxesCombined, ChevronLeft, Clock3, GraduationCap, LayoutDashboard, LogOut, Menu, MessageCircle, Sigma, Users, X } from 'lucide-react';
+import { isAdministrator } from '../../model/api';
 import type { UserSession } from '../../model/types';
 
 const mainLinks = [
@@ -14,6 +15,7 @@ const extraLinks = [
   { to: '/historial', label: 'Historial', icon: Clock3 },
   { to: '/asistente', label: 'Asistente de dudas', icon: MessageCircle },
   { to: '/evaluaciones', label: 'Evaluaciones', icon: GraduationCap },
+  { to: '/usuarios', label: 'Gestor de usuarios', icon: Users },
 ];
 
 export default function Shell({ session, signOut, children }: { session: UserSession; signOut: () => void; children: ReactNode }) {
@@ -23,7 +25,7 @@ export default function Shell({ session, signOut, children }: { session: UserSes
   return <div className="app-shell">
     <aside className={`sidebar${mobileOpen ? ' open' : ''}`} aria-label="Navegación principal">
       <div className="brand"><img className="brand-crest" src="/labmat-icon.svg" alt="Icono del Laboratorio Matemático"/><span><strong>LAB<span>MAT</span></strong><small>Laboratorio matemático</small></span><button className="mobile-close icon-button" aria-label="Cerrar menú" onClick={() => setMobileOpen(false)}><X size={21}/></button></div>
-      <div className="sidebar-scroll"><div className="nav-group-label">PLATAFORMA</div><nav>{mainLinks.map(renderLink)}</nav><div className="nav-group-label tools-label">HERRAMIENTAS</div><nav>{extraLinks.map(renderLink)}</nav></div>
+      <div className="sidebar-scroll"><div className="nav-group-label">PLATAFORMA</div><nav>{mainLinks.map(renderLink)}</nav><div className="nav-group-label tools-label">HERRAMIENTAS</div><nav>{extraLinks.map((link) => link.to === '/usuarios' && !isAdministrator(session) ? <span key={link.to} className="nav-link nav-disabled" aria-disabled="true" title="Disponible solo para administradores"><Users size={19} aria-hidden="true"/><span>{link.label}</span></span> : renderLink(link))}</nav></div>
       <div className="sidebar-footer"><div className="demo-indicator"><span className="status-dot"/>{session.mode === 'demo' ? 'Modo demostración' : 'Conectado al servidor'}</div><NavLink to="/derechos" className="copyright-link">Derechos de autor</NavLink><button className="signout" onClick={signOut}><LogOut size={18}/> Cerrar sesión</button></div>
     </aside>
     {mobileOpen && <button className="sidebar-backdrop" aria-label="Cerrar menú" onClick={() => setMobileOpen(false)} />}

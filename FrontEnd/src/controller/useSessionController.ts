@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { login, me, readSession, register, storeSession } from '../model/api';
+import { login, me, readSession, register, sessionWithUser, storeSession } from '../model/api';
 import type { UserSession } from '../model/types';
 export function useSessionController() {
   const [session, setSession] = useState<UserSession | null>(() => {
@@ -17,8 +17,29 @@ export function useSessionController() {
   }, []);
   useEffect(() => {
     let cancelled = false;
-    if (session?.token) void me(session.token).catch((reason: unknown) => { if (!cancelled) setError(reason instanceof Error ? reason.message : 'No se pudo verificar la sesión.'); });
-    return () => { cancelled = true; };
+    const token = session?.token;
+    async function refresh() {
+      if (!token) return;
+      try {
+        const user = await me(token);
+        const next = sessionWithUser({ name: '', mode: 'api', token }, user);
+        if (!cancelled) setSession((current) => {
+          if (current?.token !== token) return current;
+          storeSession(next); return next;
+        });
+      } catch (reason) {
+        if (!cancelled) {
+          setSession((current) => current?.token === token ? { ...current, roleVerified: false } : current);
+          setError(reason instanceof Error ? reason.message : 'No se pudo verificar la sesión.');
+        }
+      }
+    }
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 60000);
+    const refreshOnFocus = () => void refresh();
+    window.addEventListener('focus', refreshOnFocus);
+    window.addEventListener('lab-permissions-changed', refreshOnFocus);
+    return () => { cancelled = true; window.clearInterval(timer); window.removeEventListener('focus', refreshOnFocus); window.removeEventListener('lab-permissions-changed', refreshOnFocus); };
   }, [session?.token]);
   function enterDemo() { storeSession(null); sessionStorage.setItem('lab-demo', '1'); setError(''); setSession({ name: 'Estudiante', mode: 'demo' }); }
   async function authenticate(action: () => Promise<UserSession>) {

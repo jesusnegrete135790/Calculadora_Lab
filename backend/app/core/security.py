@@ -21,10 +21,10 @@ def verify_password(password, encoded):
         return False
 
 
-def create_token(user_id):
+def create_token(user_id, token_version=0):
     settings = get_settings()
     now = datetime.now(timezone.utc)
-    return jwt.encode({'sub': str(user_id), 'iat': now, 'exp': now + timedelta(minutes=settings.jwt_access_token_expire_minutes), 'iss': 'laboratorio-matematicas', 'aud': 'laboratorio-frontend'}, settings.jwt_secret_key.get_secret_value(), algorithm=settings.jwt_algorithm)
+    return jwt.encode({'sub': str(user_id), 'ver': token_version, 'iat': now, 'exp': now + timedelta(minutes=settings.jwt_access_token_expire_minutes), 'iss': 'laboratorio-matematicas', 'aud': 'laboratorio-frontend'}, settings.jwt_secret_key.get_secret_value(), algorithm=settings.jwt_algorithm)
 
 
 def current_user(credentials: HTTPAuthorizationCredentials | None = Depends(bearer), db: Session = Depends(get_db)):
@@ -38,7 +38,7 @@ def current_user(credentials: HTTPAuthorizationCredentials | None = Depends(bear
     except (jwt.InvalidTokenError, ValueError, TypeError):
         raise error from None
     user = db.get(Usuario, user_id)
-    if user is None:
+    if user is None or not user.activo or claims.get('ver', 0) != user.token_version:
         raise error
     return user
 

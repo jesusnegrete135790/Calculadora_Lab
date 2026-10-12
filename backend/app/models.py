@@ -16,6 +16,8 @@ class Usuario(Base):
     correo = Column('Correo', String(100), nullable=False, unique=True)
     contrasena = Column('Contrasena', String(255), nullable=False)
     rol = Column('Rol', String(20), nullable=False, default='Usuario')
+    activo = Column('Activo', Boolean, nullable=False, default=True)
+    token_version = Column('VersionToken', Integer, nullable=False, default=0)
     fecha = Column('FechaRegistro', DateTime, nullable=False, default=now)
     __table_args__ = (CheckConstraint("Rol IN ('Usuario','Administrador')", name='CK_Usuarios_Rol'),)
 

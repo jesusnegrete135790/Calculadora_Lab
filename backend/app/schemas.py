@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, mo
 Text = Annotated[str, Field(min_length=1, max_length=255)]
 Number = Annotated[Decimal, Field(allow_inf_nan=False)]
 Finite = Annotated[float, Field(allow_inf_nan=False)]
+UserRole = Literal['Usuario', 'Administrador']
 
 
 class Schema(BaseModel):
@@ -39,7 +40,37 @@ class UserOut(Schema):
     id: int
     nombre: str
     correo: str
-    rol: str
+    rol: UserRole
+    activo: bool
+
+
+class UserCreate(Register):
+    rol: UserRole = 'Usuario'
+    activo: bool = True
+
+
+class UserUpdate(Schema):
+    nombre: str | None = Field(default=None, min_length=1, max_length=100)
+    correo: EmailStr | None = Field(default=None, max_length=100)
+    contrasena: str | None = Field(default=None, min_length=10, max_length=128)
+    rol: UserRole | None = None
+    activo: bool | None = None
+
+    @field_validator('nombre')
+    @classmethod
+    def clean_name(cls, value):
+        return Register.clean_name(value)
+
+    @field_validator('correo')
+    @classmethod
+    def normalize_email(cls, value):
+        return value.lower()
+
+    @model_validator(mode='after')
+    def nonempty(self):
+        if not self.model_fields_set or any(getattr(self, field) is None for field in self.model_fields_set):
+            raise ValueError('Envía al menos un campo y no uses valores nulos')
+        return self
 
 
 class SessionOut(Schema):

@@ -13,7 +13,7 @@ from app.routes import router
 settings = get_settings()
 logger = logging.getLogger('laboratorio')
 app = FastAPI(title='Laboratorio de Matemáticas', version='1.0.0', description='Autenticación y persistencia SQL Server de cálculos realizados en React.')
-app.add_middleware(CORSMiddleware, allow_origins=[origin.strip() for origin in settings.frontend_url.split(',')], allow_credentials=False, allow_methods=['GET','POST','DELETE'], allow_headers=['Authorization','Content-Type'])
+app.add_middleware(CORSMiddleware, allow_origins=[origin.strip() for origin in settings.frontend_url.split(',')], allow_credentials=False, allow_methods=['GET','POST','PATCH','DELETE'], allow_headers=['Authorization','Content-Type'])
 app.include_router(router)
 
 

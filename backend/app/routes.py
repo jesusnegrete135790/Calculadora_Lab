@@ -12,6 +12,7 @@ from app.core.security import current_user, require_role, create_token, hasher, 
 from app.services.calculations import save, serialize
 from app.services.ai_service import AIProvider, get_ai_provider
 from app.services.evaluations import ensure_catalog, exam_questions, question_options
+from app.services.users import create_user, update_user, delete_user
 
 router = APIRouter(prefix='/api')
 
@@ -41,7 +42,7 @@ limiter = RateLimiter()
 
 
 def user_out(user):
-    return s.UserOut(id=user.id, nombre=user.nombre, correo=user.correo, rol=user.rol)
+    return s.UserOut(id=user.id, nombre=user.nombre, correo=user.correo, rol=user.rol, activo=user.activo)
 
 
 @router.post('/auth/register', tags=['Auth'], response_model=s.SessionOut, status_code=201)
@@ -65,12 +66,12 @@ def login(payload: s.Login, request: Request, db: Session = Depends(get_db)):
     limiter.check(('login', request.client.host if request.client else 'unknown'), 10)
     user = db.scalar(select(m.Usuario).where(m.Usuario.correo == str(payload.correo)))
     valid = verify_password(payload.contrasena, user.contrasena if user else DUMMY_HASH)
-    if not user or not valid:
+    if not user or not valid or not user.activo:
         raise HTTPException(401, 'Correo o contraseña incorrectos', headers={'WWW-Authenticate': 'Bearer'})
     if hasher.check_needs_rehash(user.contrasena):
         user.contrasena = hasher.hash(payload.contrasena)
         db.commit()
-    return s.SessionOut(token=create_token(user.id), usuario=user_out(user))
+    return s.SessionOut(token=create_token(user.id, user.token_version), usuario=user_out(user))
 
 
 @router.get('/auth/me', tags=['Usuarios'], response_model=s.UserOut)
@@ -79,8 +80,40 @@ def me(user: m.Usuario = Depends(current_user)):
 
 
 @router.get('/usuarios', tags=['Usuarios'], response_model=list[s.UserOut])
-def users(offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=100), admin: m.Usuario = Depends(require_role('Administrador')), db: Session = Depends(get_db)):
-    return [user_out(u) for u in db.scalars(select(m.Usuario).order_by(m.Usuario.id).offset(offset).limit(limit))]
+def users(offset: int = Query(0, ge=0, le=100000), limit: int = Query(50, ge=1, le=100), q: str = Query('', max_length=100), rol: s.UserRole | None = None, activo: bool | None = None, admin: m.Usuario = Depends(require_role('Administrador')), db: Session = Depends(get_db)):
+    return [user_out(u) for u in repo.users(db, offset, limit, q.strip(), rol, activo)]
+
+
+@router.get('/usuarios/roles', tags=['Usuarios'], response_model=list[s.UserRole])
+def user_roles(admin: m.Usuario = Depends(require_role('Administrador'))):
+    return list(s.UserRole.__args__)
+
+
+@router.post('/usuarios', tags=['Usuarios'], response_model=s.UserOut, status_code=201)
+def user_create(payload: s.UserCreate, admin: m.Usuario = Depends(require_role('Administrador')), db: Session = Depends(get_db)):
+    return user_out(create_user(db, payload, admin))
+
+
+@router.get('/usuarios/{user_id}', tags=['Usuarios'], response_model=s.UserOut)
+def user_detail(user_id: int, admin: m.Usuario = Depends(require_role('Administrador')), db: Session = Depends(get_db)):
+    if user_id < 1:
+        raise HTTPException(422, 'ID inválido')
+    return user_out(repo.user_by_id(db, user_id))
+
+
+@router.patch('/usuarios/{user_id}', tags=['Usuarios'], response_model=s.UserOut)
+def user_update(user_id: int, payload: s.UserUpdate, admin: m.Usuario = Depends(require_role('Administrador')), db: Session = Depends(get_db)):
+    if user_id < 1:
+        raise HTTPException(422, 'ID inválido')
+    return user_out(update_user(db, user_id, payload, admin))
+
+
+@router.delete('/usuarios/{user_id}', tags=['Usuarios'], status_code=204)
+def user_delete(user_id: int, admin: m.Usuario = Depends(require_role('Administrador')), db: Session = Depends(get_db)):
+    if user_id < 1:
+        raise HTTPException(422, 'ID inválido')
+    delete_user(db, user_id, admin)
+    return Response(status_code=204)
 
 
 def calculation_routes(module, schema, tag):

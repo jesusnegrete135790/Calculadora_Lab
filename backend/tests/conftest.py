@@ -36,6 +36,9 @@ def database():
                         db.execute(delete(child).where(child.padre_id.in_(record_ids)))
                     db.execute(delete(parent).where(parent.usuario_id.in_(ids)))
                 db.execute(delete(m.Asistencia).where(m.Asistencia.usuario_id.in_(ids)))
+                attempts = select(m.ResultadoExamen.id).where(m.ResultadoExamen.usuario_id.in_(ids))
+                db.execute(delete(m.RespuestaUsuario).where(m.RespuestaUsuario.resultado_id.in_(attempts)))
+                db.execute(delete(m.ResultadoExamen).where(m.ResultadoExamen.usuario_id.in_(ids)))
                 db.execute(delete(m.Usuario).where(m.Usuario.id.in_(ids)))
                 db.commit()
         return
