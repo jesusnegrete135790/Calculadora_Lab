@@ -1,7 +1,5 @@
 -- Run with SSMS or sqlcmd. Creates missing tables only; existing schemas use 002.
-IF DB_ID(N'LaboratorioMatematicas') IS NULL
-    EXEC(N'CREATE DATABASE LaboratorioMatematicas');
-GO
+
 USE LaboratorioMatematicas;
 GO
 IF OBJECT_ID(N'dbo.Usuarios', N'U') IS NULL
