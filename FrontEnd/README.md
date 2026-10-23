@@ -42,7 +42,7 @@ Las vistas recogen los datos y presentan resultados. Los controladores validan e
 
 | Módulo | Herramientas que funcionan en modo demostración |
 | --- | --- |
-| Lógica matemática | Tabla de verdad, simplificación por minterminos, mapa de Karnaugh, circuito SVG simplificado y galería interactiva de compuertas AND, OR, NOT, NAND, NOR, XOR y XNOR (hasta 4 variables) |
+| Lógica matemática | Siete temas con teoría, ejemplos y ejercicios: proposiciones, inferencia, equivalencia, tablas de verdad, verdad y validez, inducción y álgebra booleana. Herramientas de equivalencia, argumentos, consistencia, predicados, sumatorias, simplificación, Karnaugh y compuertas |
 | Matemáticas financieras | Interés simple/compuesto, valor actual, descuento comercial/racional/en serie, tasas equivalentes y amortización con cambios de tasa, abonos recurrentes o extraordinarios por periodo; curvas adicionales y superficies 3D de sensibilidad a plazo y tasa |
 | Matemáticas computacionales | Bisección, Newton–Raphson, interpolación de Lagrange/Newton, Euler, Euler mejorado, Runge–Kutta 4 y gráficas 3D de funciones de dos variables; campo 3D de pendientes para EDO cuando el dominio lo permite |
 | Probabilidad y estadística | Medidas descriptivas, tabla de frecuencias absolutas, relativas y acumuladas, binomial, Poisson y normal acumulada |
@@ -54,7 +54,23 @@ Para generar un informe completo, pulsa **Imprimir / PDF** en el resultado y eli
 
 Las gráficas 3D se usan para funciones con dos variables independientes. Una función de una sola variable conserva su gráfica 2D; una EDO también puede mostrar la superficie de su campo de pendientes junto a la curva de solución. El parser de funciones admite `x`, `y`, números, `+ - * / ^`, paréntesis, `sin`, `cos`, `tan`, `exp`, `ln`, `log`, `sqrt` y `abs`.
 
-La interfaz incorpora el escudo de la UNAM y una página de **Derechos de autor** disponible desde el acceso y el menú. El equipo ya verificó el permiso de uso de la identidad institucional.
+La interfaz incorpora el escudo de la UNAM y una página de **Derechos de autor** disponible desde el pie de página del acceso y del laboratorio. El equipo ya verificó el permiso de uso de la identidad institucional.
+
+### Contenido y práctica de lógica matemática
+
+El selector presenta los siete bloques del contenido temático y todos sus subtemas numerados. Cada bloque incluye explicaciones desplegables, ejemplos resueltos y una pregunta de autoevaluación con retroalimentación. Estas preguntas son práctica local; las evaluaciones calificadas por cuenta continúan en **Evaluaciones**.
+
+- **Proposiciones y tablas de verdad:** conectores, condicional, bicondicional y clasificación como tautología, contradicción o contingencia.
+- **Inferencia y equivalencia:** reglas y ejemplos de demostración, comparación exhaustiva de expresiones y contraejemplos cuando no son equivalentes.
+- **Verdad y validez:** argumentos, conclusiones no válidas, demostración condicional y diagrama de valores; el selector de herramienta permite comprobar validez, consistencia o predicados con cuantificadores.
+- **Inducción:** caso base, hipótesis, paso inductivo y conclusión para sumas de naturales, impares y cuadrados; calcula el término enésimo y la suma de los primeros n términos.
+- **Álgebra booleana:** propiedades, teoremas, optimización, mapas de Karnaugh, compuertas interactivas y aplicaciones.
+
+Las herramientas proposicionales admiten hasta cuatro variables distintas en total y de una a cuatro premisas. Cada expresión admite 255 caracteres; se aceptan letras individuales, constantes `0`/`1` y conectores `¬ ∧ ∨ → ↔` o sus alternativas `! & | -> <->`. Los predicados se evalúan en un dominio finito de 1 a 16 números: sus resultados no generalizan a dominios infinitos. Las tres demostraciones por inducción son guiadas; la tabla numérica acepta `1 ≤ n ≤ 1000` y no sustituye la demostración algebraica.
+
+Todas estas herramientas usan el historial local en demostración y la API con una cuenta. La API admite las entradas estructuradas nuevas y conserva la compatibilidad con la entrada de expresión original; no requiere una migración SQL. Los resultados conservan impresión y descarga de tablas CSV.
+
+Para regenerar los casos de integración de la API con los algoritmos actuales del frontend, ejecuta `node scripts/generate-logic-fixtures.cjs` desde esta carpeta y después las pruebas del backend.
 
 ## Integración con FastAPI y SQL Server
 
