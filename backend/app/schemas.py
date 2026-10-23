@@ -281,15 +281,90 @@ class Calculation(Schema):
         return self
 
 
+class LogicTruthInput(Schema):
+    method: Literal['truth']
+    expression: Text
+
+
+class LogicEquivalenceInput(Schema):
+    method: Literal['equivalence']
+    left: Text
+    right: Text
+
+
+class LogicPremisesInput(Schema):
+    premises: str = Field(min_length=1, max_length=1023)
+
+    @field_validator('premises')
+    @classmethod
+    def premise_count(cls, value):
+        premises = [part.strip() for part in re.split(r'[;\n]', value) if part.strip()]
+        if not 1 <= len(premises) <= 4 or any(len(part) > 255 for part in premises):
+            raise ValueError('Se requieren entre una y cuatro premisas de hasta 255 caracteres')
+        return value
+
+
+class LogicArgumentInput(LogicPremisesInput):
+    method: Literal['argument']
+    conclusion: Text
+
+
+class LogicConsistencyInput(LogicPremisesInput):
+    method: Literal['consistency']
+
+
+class LogicPredicateInput(Schema):
+    method: Literal['predicate']
+    domain: Text
+    expression: Text
+    relation: Literal['>', '>=', '<', '<=', '=', '!=']
+    target: Finite
+
+    @field_validator('domain')
+    @classmethod
+    def finite_domain(cls, value):
+        tokens = re.split(r'[\s,;]+', value.strip())
+        if not 1 <= len(tokens) <= 16 or any(not re.fullmatch(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)', token) or not math.isfinite(float(token)) for token in tokens):
+            raise ValueError('El dominio requiere entre 1 y 16 números finitos')
+        return value
+
+
+class LogicInductionInput(Schema):
+    method: Literal['induction']
+    series: Literal['naturales', 'impares', 'cuadrados']
+    n: int = Field(ge=1, le=1000, strict=True)
+
+
+LogicInput = Annotated[
+    LogicTruthInput | LogicEquivalenceInput | LogicArgumentInput | LogicConsistencyInput | LogicPredicateInput | LogicInductionInput,
+    Field(discriminator='method'),
+]
+
+
 class LogicCalculation(Calculation):
-    input: str = Field(min_length=1, max_length=255)
+    # Retain the original expression-string payload for existing clients.
+    input: Annotated[str, Field(min_length=1, max_length=255)] | LogicInput
 
     @model_validator(mode='after')
     def truth_rows(self):
-        if self.result.table:
-            width = len(self.result.table.columns) - 1
-            if not 1 <= width <= 4 or len(self.result.table.rows) != 2 ** width or any(v not in [0, 1] for row in self.result.table.rows for v in row):
+        method = 'truth' if isinstance(self.input, str) else self.input.method
+        table = self.result.table
+        if method != 'truth' and (self.result.logicMap is not None or self.result.circuitTerms is not None):
+            raise ValueError('Los mapas y circuitos corresponden a la simplificación booleana')
+        if not table and method != 'truth':
+            raise ValueError('La herramienta requiere una tabla de resultados')
+        if table and method in ['truth', 'equivalence', 'argument', 'consistency']:
+            extra = 1 if method == 'truth' else 3 if method == 'equivalence' else len([part for part in re.split(r'[;\n]', self.input.premises) if part.strip()]) + (2 if method == 'argument' else 1)
+            width = len(table.columns) - extra
+            if not 0 <= width <= 4 or len(table.rows) != 2 ** width or any(v not in [0, 1] for row in table.rows for v in row):
                 raise ValueError('Tabla de verdad inválida')
+        if table and method == 'predicate':
+            domain_size = len(set(float(token) for token in re.split(r'[\s,;]+', self.input.domain.strip())))
+            if len(table.columns) != 3 or len(table.rows) != domain_size or any(row[2] not in [0, 1] or any(not isinstance(v, (int, float)) or not math.isfinite(v) for v in row[:2]) for row in table.rows):
+                raise ValueError('Tabla de predicados inválida')
+        if table and method == 'induction':
+            if len(table.columns) != 4 or len(table.rows) != self.input.n or any(not isinstance(v, (int, float)) or not math.isfinite(v) for row in table.rows for v in row):
+                raise ValueError('Tabla de inducción inválida')
         return self
 
 

@@ -54,9 +54,11 @@ def save(db, module, payload, user_id):
     rows = result.table.rows if result.table else []
     children = []
     if module == 'logica':
-        data.update(expresion=inp, resultado=result.value)
-        for row in rows:
-            children.append(m.FilaVerdad(variables=json.dumps([int(v) for v in row[:-1]]), resultado=bool(row[-1])))
+        is_truth = isinstance(inp, str) or inp.method == 'truth'
+        data.update(expresion=(inp if isinstance(inp, str) else inp.expression) if is_truth else None, resultado=result.value)
+        if is_truth:
+            for row in rows:
+                children.append(m.FilaVerdad(variables=json.dumps([int(v) for v in row[:-1]]), resultado=bool(row[-1])))
         if result.logicMap:
             children.append(m.Mapa(grupos=result.logicMap.model_dump_json(), circuito=json.dumps(result.circuitTerms or [], ensure_ascii=False)))
     elif module == 'finanzas':

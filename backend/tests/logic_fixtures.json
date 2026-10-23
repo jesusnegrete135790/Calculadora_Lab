@@ -1,0 +1,1150 @@
+[
+  {
+    "method": "truth",
+    "input": {
+      "method": "truth",
+      "expression": "A"
+    },
+    "result": {
+      "title": "Expresión simplificada",
+      "value": "A",
+      "subtitle": "1 de 2 combinaciones verdaderas",
+      "table": {
+        "columns": [
+          "A",
+          "Resultado"
+        ],
+        "rows": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "logicMap": {
+        "rowLabels": [
+          ""
+        ],
+        "columnLabels": [
+          "0",
+          "1"
+        ],
+        "cells": [
+          {
+            "value": 0,
+            "minterm": 0,
+            "groups": []
+          },
+          {
+            "value": 1,
+            "minterm": 1,
+            "groups": [
+              0
+            ]
+          }
+        ]
+      },
+      "circuitTerms": [
+        [
+          "A"
+        ]
+      ],
+      "steps": [
+        {
+          "title": "Expresión original",
+          "detail": "A"
+        },
+        {
+          "title": "Variables",
+          "detail": "A"
+        },
+        {
+          "title": "Clasificación",
+          "detail": "Contingencia: es verdadera en algunas combinaciones y falsa en otras."
+        },
+        {
+          "title": "Evaluación",
+          "detail": "Se calcularon las 2 combinaciones posibles y los minterminos 1."
+        },
+        {
+          "title": "Agrupación",
+          "detail": "1 cubre 1"
+        }
+      ],
+      "note": "El mapa y el esquema representan una suma de productos para hasta cuatro variables."
+    }
+  },
+  {
+    "method": "truth",
+    "input": {
+      "method": "truth",
+      "expression": "1"
+    },
+    "result": {
+      "title": "Expresión simplificada",
+      "value": "1 (tautología)",
+      "subtitle": "1 de 1 combinaciones verdaderas",
+      "table": {
+        "columns": [
+          "Resultado"
+        ],
+        "rows": [
+          [
+            1
+          ]
+        ]
+      },
+      "logicMap": {
+        "rowLabels": [
+          ""
+        ],
+        "columnLabels": [
+          ""
+        ],
+        "cells": [
+          {
+            "value": 1,
+            "minterm": 0,
+            "groups": [
+              0
+            ]
+          }
+        ]
+      },
+      "circuitTerms": [],
+      "steps": [
+        {
+          "title": "Expresión original",
+          "detail": "1"
+        },
+        {
+          "title": "Variables",
+          "detail": "Sin variables; expresión constante."
+        },
+        {
+          "title": "Clasificación",
+          "detail": "Tautología: es verdadera en todas las combinaciones."
+        },
+        {
+          "title": "Evaluación",
+          "detail": "Se calcularon las 1 combinaciones posibles y los minterminos 0."
+        },
+        {
+          "title": "Agrupación",
+          "detail": " cubre 0"
+        }
+      ],
+      "note": "El mapa y el esquema representan una suma de productos para hasta cuatro variables."
+    }
+  },
+  {
+    "method": "truth",
+    "input": {
+      "method": "truth",
+      "expression": "0"
+    },
+    "result": {
+      "title": "Expresión simplificada",
+      "value": "0 (contradicción)",
+      "subtitle": "0 de 1 combinaciones verdaderas",
+      "table": {
+        "columns": [
+          "Resultado"
+        ],
+        "rows": [
+          [
+            0
+          ]
+        ]
+      },
+      "logicMap": {
+        "rowLabels": [
+          ""
+        ],
+        "columnLabels": [
+          ""
+        ],
+        "cells": [
+          {
+            "value": 0,
+            "minterm": 0,
+            "groups": []
+          }
+        ]
+      },
+      "circuitTerms": [],
+      "steps": [
+        {
+          "title": "Expresión original",
+          "detail": "0"
+        },
+        {
+          "title": "Variables",
+          "detail": "Sin variables; expresión constante."
+        },
+        {
+          "title": "Clasificación",
+          "detail": "Contradicción: es falsa en todas las combinaciones."
+        },
+        {
+          "title": "Evaluación",
+          "detail": "Se calcularon las 1 combinaciones posibles y los minterminos ninguno."
+        },
+        {
+          "title": "Agrupación",
+          "detail": "No hay combinaciones verdaderas."
+        }
+      ],
+      "note": "El mapa y el esquema representan una suma de productos para hasta cuatro variables."
+    }
+  },
+  {
+    "method": "equivalence",
+    "input": {
+      "method": "equivalence",
+      "left": "!(A&B)",
+      "right": "!A|!B"
+    },
+    "result": {
+      "title": "Equivalencia lógica",
+      "value": "Equivalentes",
+      "subtitle": "4 de 4 combinaciones coinciden",
+      "steps": [
+        {
+          "title": "Expresiones",
+          "detail": "E1: !(A&B); E2: !A|!B."
+        },
+        {
+          "title": "Criterio",
+          "detail": "Dos expresiones son equivalentes si E1 ↔ E2 es una tautología."
+        },
+        {
+          "title": "Comprobación completa",
+          "detail": "Ambas expresiones tienen el mismo valor en todas las asignaciones."
+        }
+      ],
+      "table": {
+        "columns": [
+          "A",
+          "B",
+          "E1",
+          "E2",
+          "E1 ↔ E2"
+        ],
+        "rows": [
+          [
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            0,
+            0,
+            1
+          ]
+        ]
+      },
+      "note": "1 = verdadero; 0 = falso. Se revisan todas las combinaciones de hasta cuatro variables."
+    }
+  },
+  {
+    "method": "equivalence",
+    "input": {
+      "method": "equivalence",
+      "left": "A&B",
+      "right": "C&D"
+    },
+    "result": {
+      "title": "Equivalencia lógica",
+      "value": "No equivalentes",
+      "subtitle": "10 de 16 combinaciones coinciden",
+      "steps": [
+        {
+          "title": "Expresiones",
+          "detail": "E1: A&B; E2: C&D."
+        },
+        {
+          "title": "Criterio",
+          "detail": "Dos expresiones son equivalentes si E1 ↔ E2 es una tautología."
+        },
+        {
+          "title": "Contraejemplo",
+          "detail": "A = 0, B = 0, C = 1, D = 1: E1 = 0, E2 = 1."
+        }
+      ],
+      "table": {
+        "columns": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E1",
+          "E2",
+          "E1 ↔ E2"
+        ],
+        "rows": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ]
+      },
+      "note": "1 = verdadero; 0 = falso. Se revisan todas las combinaciones de hasta cuatro variables."
+    }
+  },
+  {
+    "method": "argument",
+    "input": {
+      "method": "argument",
+      "premises": "A -> B; B -> C; C -> D; A",
+      "conclusion": "D"
+    },
+    "result": {
+      "title": "Validez del argumento",
+      "value": "Argumento válido",
+      "subtitle": "0 contraejemplos; 1 asignaciones con todas las premisas verdaderas",
+      "steps": [
+        {
+          "title": "Premisa 1",
+          "detail": "A -> B"
+        },
+        {
+          "title": "Premisa 2",
+          "detail": "B -> C"
+        },
+        {
+          "title": "Premisa 3",
+          "detail": "C -> D"
+        },
+        {
+          "title": "Premisa 4",
+          "detail": "A"
+        },
+        {
+          "title": "Conclusión",
+          "detail": "D"
+        },
+        {
+          "title": "Criterio de validez",
+          "detail": "Se buscan filas con todas las premisas verdaderas y la conclusión falsa. Basta una para refutar la validez."
+        },
+        {
+          "title": "Comprobación",
+          "detail": "En todas las filas con premisas verdaderas, la conclusión también es verdadera."
+        }
+      ],
+      "table": {
+        "columns": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "P1",
+          "P2",
+          "P3",
+          "P4",
+          "Conclusión",
+          "Contraejemplo"
+        ],
+        "rows": [
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0
+          ]
+        ]
+      },
+      "note": "La validez depende de la forma del argumento. La solidez requiere además premisas verdaderas en la interpretación considerada. 1 = verdadero; 0 = falso."
+    }
+  },
+  {
+    "method": "argument",
+    "input": {
+      "method": "argument",
+      "premises": "A -> B; B",
+      "conclusion": "A"
+    },
+    "result": {
+      "title": "Validez del argumento",
+      "value": "Argumento no válido",
+      "subtitle": "1 contraejemplo; 2 asignaciones con todas las premisas verdaderas",
+      "steps": [
+        {
+          "title": "Premisa 1",
+          "detail": "A -> B"
+        },
+        {
+          "title": "Premisa 2",
+          "detail": "B"
+        },
+        {
+          "title": "Conclusión",
+          "detail": "A"
+        },
+        {
+          "title": "Criterio de validez",
+          "detail": "Se buscan filas con todas las premisas verdaderas y la conclusión falsa. Basta una para refutar la validez."
+        },
+        {
+          "title": "Contraejemplo",
+          "detail": "A = 0, B = 1: todas las premisas valen 1 y la conclusión vale 0."
+        }
+      ],
+      "table": {
+        "columns": [
+          "A",
+          "B",
+          "P1",
+          "P2",
+          "Conclusión",
+          "Contraejemplo"
+        ],
+        "rows": [
+          [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            0
+          ]
+        ]
+      },
+      "note": "La validez depende de la forma del argumento. La solidez requiere además premisas verdaderas en la interpretación considerada. 1 = verdadero; 0 = falso."
+    }
+  },
+  {
+    "method": "consistency",
+    "input": {
+      "method": "consistency",
+      "premises": "A; !A"
+    },
+    "result": {
+      "title": "Consistencia de las premisas",
+      "value": "Inconsistentes",
+      "subtitle": "0 de 2 asignaciones hacen verdaderas todas las premisas",
+      "steps": [
+        {
+          "title": "Premisa 1",
+          "detail": "A"
+        },
+        {
+          "title": "Premisa 2",
+          "detail": "!A"
+        },
+        {
+          "title": "Criterio",
+          "detail": "Un conjunto es consistente si existe al menos una asignación donde todas sus premisas son verdaderas."
+        },
+        {
+          "title": "Resultado",
+          "detail": "No existe una asignación que satisfaga simultáneamente todas las premisas."
+        }
+      ],
+      "table": {
+        "columns": [
+          "A",
+          "P1",
+          "P2",
+          "Todas verdaderas"
+        ],
+        "rows": [
+          [
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      "note": "La consistencia evalúa la compatibilidad de las premisas, sin exigir una conclusión."
+    }
+  },
+  {
+    "method": "predicate",
+    "input": {
+      "method": "predicate",
+      "domain": "-2, -1, 0, 1, 2",
+      "expression": "x^2",
+      "relation": ">",
+      "target": 0
+    },
+    "result": {
+      "title": "Predicados en un dominio finito",
+      "value": "∀x P(x): falso · ∃x P(x): verdadero",
+      "subtitle": "P(x): x^2 > 0",
+      "steps": [
+        {
+          "title": "Dominio",
+          "detail": "D = {-2, -1, 0, 1, 2}. Los valores repetidos se consideran una sola vez."
+        },
+        {
+          "title": "Evaluación del predicado",
+          "detail": "Sustituye cada elemento del dominio y compara el resultado con el valor indicado."
+        },
+        {
+          "title": "Cuantificador universal",
+          "detail": "Contraejemplo: x = 0 no satisface P(x)."
+        },
+        {
+          "title": "Cuantificador existencial",
+          "detail": "Testigo: x = -2 satisface P(x)."
+        }
+      ],
+      "table": {
+        "columns": [
+          "x",
+          "Expresión evaluada",
+          "P(x)"
+        ],
+        "rows": [
+          [
+            -2,
+            4,
+            1
+          ],
+          [
+            -1,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            2,
+            4,
+            1
+          ]
+        ]
+      },
+      "note": "Los cuantificadores se evalúan únicamente en el dominio finito indicado. Se usa aritmética numérica del navegador; una comprobación finita no demuestra una afirmación sobre todos los naturales o reales."
+    }
+  },
+  {
+    "method": "induction",
+    "input": {
+      "method": "induction",
+      "series": "naturales",
+      "n": 5
+    },
+    "result": {
+      "title": "Sumatoria y término enésimo",
+      "value": "S5 = 15; a5 = 5",
+      "subtitle": "aₙ = n; Sₙ = n(n + 1) / 2",
+      "steps": [
+        {
+          "title": "Proposición P(n)",
+          "detail": "Para todo n ≥ 1, la suma de los primeros n términos cumple Sₙ = n(n + 1) / 2."
+        },
+        {
+          "title": "Caso base: n = 1",
+          "detail": "El primer término vale 1 y la fórmula da 1. P(1) es verdadera."
+        },
+        {
+          "title": "Hipótesis inductiva",
+          "detail": "Para un entero arbitrario k ≥ 1, suponemos 1 + 2 + … + k = k(k + 1)/2."
+        },
+        {
+          "title": "Paso inductivo",
+          "detail": "Sₖ₊₁ = k(k + 1)/2 + (k + 1) = (k + 1)(k + 2)/2. Es la fórmula con n = k + 1."
+        },
+        {
+          "title": "Conclusión por inducción",
+          "detail": "El caso base y P(k) ⇒ P(k + 1) demuestran la identidad para todo entero n ≥ 1."
+        },
+        {
+          "title": "Ejemplo numérico: n = 5",
+          "detail": "La suma directa es 15, la fórmula produce 15 y el término enésimo es 5."
+        }
+      ],
+      "table": {
+        "columns": [
+          "n",
+          "Término aₙ",
+          "Suma directa",
+          "Fórmula Sₙ"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            2,
+            2,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            6,
+            6
+          ],
+          [
+            4,
+            4,
+            10,
+            10
+          ],
+          [
+            5,
+            5,
+            15,
+            15
+          ]
+        ]
+      },
+      "note": "Demostración guiada para estas tres identidades. La tabla ilustra casos particulares; la demostración general está en el caso base y el paso inductivo."
+    }
+  },
+  {
+    "method": "induction",
+    "input": {
+      "method": "induction",
+      "series": "impares",
+      "n": 5
+    },
+    "result": {
+      "title": "Sumatoria y término enésimo",
+      "value": "S5 = 25; a5 = 9",
+      "subtitle": "aₙ = 2n − 1; Sₙ = n²",
+      "steps": [
+        {
+          "title": "Proposición P(n)",
+          "detail": "Para todo n ≥ 1, la suma de los primeros n términos cumple Sₙ = n²."
+        },
+        {
+          "title": "Caso base: n = 1",
+          "detail": "El primer término vale 1 y la fórmula da 1. P(1) es verdadera."
+        },
+        {
+          "title": "Hipótesis inductiva",
+          "detail": "Para un entero arbitrario k ≥ 1, suponemos 1 + 3 + … + (2k − 1) = k²."
+        },
+        {
+          "title": "Paso inductivo",
+          "detail": "Sₖ₊₁ = k² + [2(k + 1) − 1] = k² + 2k + 1 = (k + 1)²."
+        },
+        {
+          "title": "Conclusión por inducción",
+          "detail": "El caso base y P(k) ⇒ P(k + 1) demuestran la identidad para todo entero n ≥ 1."
+        },
+        {
+          "title": "Ejemplo numérico: n = 5",
+          "detail": "La suma directa es 25, la fórmula produce 25 y el término enésimo es 9."
+        }
+      ],
+      "table": {
+        "columns": [
+          "n",
+          "Término aₙ",
+          "Suma directa",
+          "Fórmula Sₙ"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            2,
+            3,
+            4,
+            4
+          ],
+          [
+            3,
+            5,
+            9,
+            9
+          ],
+          [
+            4,
+            7,
+            16,
+            16
+          ],
+          [
+            5,
+            9,
+            25,
+            25
+          ]
+        ]
+      },
+      "note": "Demostración guiada para estas tres identidades. La tabla ilustra casos particulares; la demostración general está en el caso base y el paso inductivo."
+    }
+  },
+  {
+    "method": "induction",
+    "input": {
+      "method": "induction",
+      "series": "cuadrados",
+      "n": 5
+    },
+    "result": {
+      "title": "Sumatoria y término enésimo",
+      "value": "S5 = 55; a5 = 25",
+      "subtitle": "aₙ = n²; Sₙ = n(n + 1)(2n + 1) / 6",
+      "steps": [
+        {
+          "title": "Proposición P(n)",
+          "detail": "Para todo n ≥ 1, la suma de los primeros n términos cumple Sₙ = n(n + 1)(2n + 1) / 6."
+        },
+        {
+          "title": "Caso base: n = 1",
+          "detail": "El primer término vale 1 y la fórmula da 1. P(1) es verdadera."
+        },
+        {
+          "title": "Hipótesis inductiva",
+          "detail": "Para un entero arbitrario k ≥ 1, suponemos 1² + 2² + … + k² = k(k + 1)(2k + 1)/6."
+        },
+        {
+          "title": "Paso inductivo",
+          "detail": "Sₖ₊₁ = k(k + 1)(2k + 1)/6 + (k + 1)² = (k + 1)[2k² + 7k + 6]/6 = (k + 1)(k + 2)(2k + 3)/6."
+        },
+        {
+          "title": "Conclusión por inducción",
+          "detail": "El caso base y P(k) ⇒ P(k + 1) demuestran la identidad para todo entero n ≥ 1."
+        },
+        {
+          "title": "Ejemplo numérico: n = 5",
+          "detail": "La suma directa es 55, la fórmula produce 55 y el término enésimo es 25."
+        }
+      ],
+      "table": {
+        "columns": [
+          "n",
+          "Término aₙ",
+          "Suma directa",
+          "Fórmula Sₙ"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            2,
+            4,
+            5,
+            5
+          ],
+          [
+            3,
+            9,
+            14,
+            14
+          ],
+          [
+            4,
+            16,
+            30,
+            30
+          ],
+          [
+            5,
+            25,
+            55,
+            55
+          ]
+        ]
+      },
+      "note": "Demostración guiada para estas tres identidades. La tabla ilustra casos particulares; la demostración general está en el caso base y el paso inductivo."
+    }
+  }
+]

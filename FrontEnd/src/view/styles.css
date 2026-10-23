@@ -10,7 +10,7 @@
 .chart-shaded{fill:rgba(75,159,183,.24);stroke:none}
 
 /* Identidad y créditos */
-.brand-crest{width:38px;height:43px;object-fit:contain;flex:none}.topbar-crest{width:25px;height:29px;object-fit:contain;margin-right:3px}.access-crest{width:43px;height:48px;object-fit:contain}.access-card-icon img{width:39px;height:42px;object-fit:contain}.copyright-link{display:inline-block;color:#b9d0df;font-size:11px;margin:0 0 11px;text-decoration:underline;text-underline-offset:3px}.copyright-link:hover{color:#fff}.access-copyright{display:block;margin-top:14px;text-align:center;color:#476b83;font-size:11px;text-decoration:underline;text-underline-offset:3px}.copyright-page{padding-top:16px}.copyright-card{display:grid;grid-template-columns:130px minmax(0,1fr);gap:28px;background:#fff;border:1px solid #e1e9f0;border-radius:14px;padding:30px;max-width:850px}.copyright-card>img{width:125px;height:125px;object-fit:contain}.copyright-card>div>svg{color:#b28b39}.copyright-card h2{font-size:22px;margin:10px 0}.copyright-card p{font-size:13px;color:#526b7e}.copyright-card .inline-note{margin-top:18px}
+.brand-crest{width:38px;height:43px;object-fit:contain;flex:none}.topbar-crest{width:25px;height:29px;object-fit:contain;margin-right:3px}.access-crest{width:43px;height:48px;object-fit:contain}.access-card-icon img{width:39px;height:42px;object-fit:contain}.copyright-page{padding-top:16px}.copyright-card{display:grid;grid-template-columns:130px minmax(0,1fr);gap:28px;background:#fff;border:1px solid #e1e9f0;border-radius:14px;padding:30px;max-width:850px}.copyright-card>img{width:125px;height:125px;object-fit:contain}.copyright-card>div>svg{color:#b28b39}.copyright-card h2{font-size:22px;margin:10px 0}.copyright-card p{font-size:13px;color:#526b7e}.copyright-card .inline-note{margin-top:18px}
 
 /* Superficie 3D interactiva */
 .surface-card{border:1px solid #dfeaf0;border-radius:10px;background:#fff;margin:22px 0;padding:14px}.surface-heading,.surface-heading>div{display:flex;align-items:center;gap:8px}.surface-heading{justify-content:space-between;color:#37627e;font-size:11px}.surface-heading span{font-size:10px;color:#91a6b3}.surface-svg{display:block;width:100%;max-height:390px;margin-top:8px;border-radius:8px}.surface-polygon{stroke:rgba(20,49,70,.21);stroke-width:.6;stroke-linejoin:round}.surface-polygon:hover{stroke:#092c49;stroke-width:1.8}.surface-axis{stroke:#253d51;stroke-width:2}.surface-axis-label{font:700 15px "Varela Round",sans-serif;fill:#203d55}.surface-legend{display:flex;align-items:center;gap:10px;font:10px "Varela Round",sans-serif;color:#738b9b}.surface-gradient{height:10px;border-radius:8px;flex:1;background:linear-gradient(90deg,hsl(215 64% 48%),hsl(140 64% 54%),hsl(60 64% 60%))}.surface-controls{border-top:1px solid #e6edf2;margin-top:14px;padding-top:12px;display:flex;align-items:center;gap:14px;color:#52748a}.surface-controls label{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;flex:1}.surface-controls input{accent-color:#246c91;width:100%}
@@ -97,3 +97,76 @@
 .users-delete-confirm{padding:20px;border:1px solid #e7bdbe;border-radius:12px;background:#fff8f8;margin:20px 0}.users-delete-confirm h2{font-size:18px}.users-delete-confirm p{font-size:13px;overflow-wrap:anywhere}.users-danger{background:#9d303b;color:#fff}.users-danger-icon{color:#9d303b}.users-pagination{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:18px;font-size:12px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:600px){.users-filters .field{flex:1;min-width:100%}.users-pagination{justify-content:center}}
+
+/* Pie de página compartido */
+.main-area{display:flex;flex-direction:column}
+.main-area>.page-content{width:100%;margin:0 auto}
+.site-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin-top:auto;padding:20px 38px;border-top:1px solid #e6ebf1;background:#fff;color:#526b7e;font-size:11px;line-height:1.6}
+.site-footer a{display:inline-flex;align-items:center;min-height:32px;color:#215d88;text-decoration:underline;text-underline-offset:3px}
+.site-footer a:hover{color:#0b3d64}
+.access-page{grid-template-rows:1fr auto}
+.access-page>.site-footer{grid-column:1/-1}
+@media(max-width:850px){.access-page{grid-template-rows:auto 1fr auto}.site-footer{padding:18px 22px}}
+@media(max-width:600px){.site-footer{padding:18px 15px;flex-direction:column;gap:4px;text-align:center}}
+
+/* Temario y prácticas de lógica matemática */
+.logic-syllabus{background:#fff;border:1px solid #e1e9f0;border-radius:13px;padding:24px;margin-bottom:28px}
+.logic-syllabus-header,.logic-topic-heading{display:flex;justify-content:space-between;align-items:center;gap:18px}
+.logic-syllabus-header{margin-bottom:20px}
+.logic-syllabus-header h2{font-size:21px;margin:0}
+.logic-topic-count{font-size:11px;color:#526b7e;white-space:nowrap}
+.logic-topic-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.logic-topic-nav button{display:flex;align-items:center;gap:9px;min-height:63px;padding:12px;text-align:left;border:1px solid #dce5ee;border-radius:9px;background:#f8fafc;color:#38546e;transition:background .18s,border-color .18s}
+.logic-topic-nav button>span{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:7px;background:#e9edf7;color:#5755a5;font-size:11px}
+.logic-topic-nav button strong{font-size:12px;line-height:1.45;flex:1}
+.logic-topic-nav button>svg{flex:none}
+.logic-topic-nav button:hover{background:#f0f3fa;border-color:#aebed0}
+.logic-topic-nav button[aria-pressed="true"]{background:#edf0fc;border-color:#777bb9;color:#353e7c}
+.logic-topic-nav button[aria-pressed="true"]>span{background:#5755a5;color:#fff}
+.logic-topic-heading{margin-bottom:18px}
+.logic-topic-heading h2{font-size:25px;margin:0 0 7px}
+.logic-topic-heading p{font-size:13px;color:#526b7e;margin:0}
+.logic-topic-heading>a{flex:none}
+.logic-lessons{display:grid;gap:8px}
+.logic-lessons details{border:1px solid #dfe7ee;border-radius:9px;background:#fff;overflow:hidden}
+.logic-lessons summary{display:flex;align-items:center;gap:10px;min-height:50px;padding:14px 18px;cursor:pointer;list-style:none;color:#2d4963;font-size:13px;font-weight:700;line-height:1.5}
+.logic-lessons summary::-webkit-details-marker{display:none}
+.logic-lessons summary>svg{flex:none;color:#5755a5}
+.logic-lessons summary:after{content:'+';font-size:20px;font-weight:400;margin-left:auto;color:#526b7e}
+.logic-lessons details[open]>summary:after{content:'−'}
+.logic-lessons summary:hover{background:#f5f7fc}
+.logic-lessons summary:focus-visible{outline:3px solid #d8a22b;outline-offset:-3px}
+.logic-lessons details>div{padding:0 18px 18px}
+.logic-lessons p{font-size:13px;color:#425d73;line-height:1.75;margin:0 0 13px;max-width:85ch;overflow-wrap:anywhere}
+.logic-lesson-example{background:#f1f5fa;border-left:3px solid #777bb9;border-radius:0 7px 7px 0;padding:12px 15px}
+.logic-lesson-example strong{display:block;font-size:11px;color:#3b4679;margin-bottom:6px}
+.logic-lesson-example p{margin:0}
+.logic-quiz{padding:20px 22px;background:#fffaf0;border:1px solid #eee0bc;border-radius:11px;margin:20px 0 28px}
+.logic-quiz h3{font-size:14px;color:#3e4d5c;margin:0 0 14px;line-height:1.6}
+.logic-quiz-options{display:flex;gap:8px;flex-wrap:wrap}
+.logic-quiz-options button,.logic-examples button{min-height:44px;padding:9px 12px;border:1px solid #cbd8e4;border-radius:7px;color:#37556e;background:#fff;font-size:12px;line-height:1.5;text-align:left}
+.logic-quiz-options button:hover,.logic-examples button:hover{background:#eef4fa;border-color:#8ca7bf}
+.logic-quiz-options button[aria-pressed="true"]{background:#e9eff7;border-color:#285d85;color:#214f73}
+.logic-feedback{margin:14px 0 0;padding:11px 13px;background:#fff0df;border-radius:7px;color:#7b4914;font-size:12px}
+.logic-feedback.correct{background:#e7f3eb;color:#216447}
+.logic-practice-heading{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:#3b6686;scroll-margin-top:20px}
+.logic-practice-heading h3{font-size:19px;margin:0 0 3px;color:#243f58}
+.logic-practice-heading p{font-size:12px;color:#526b7e;margin:0}
+.logic-module .form-card-head h3{font-size:17px;margin:0 0 3px;line-height:1.4}
+.logic-tool-fields{border:0;padding:0;margin:0;min-width:0;display:grid;gap:18px}
+.logic-expression-field{display:grid;gap:10px;min-width:0}
+.logic-module .operator-row button{width:44px;height:44px}
+.logic-module .field small{color:#526b7e}
+.logic-examples{margin-top:22px;border-top:1px solid #e1e9f0;padding-top:17px}
+.logic-examples>strong{display:block;font-size:11px;color:#526b7e;margin-bottom:10px}
+.logic-examples>div{display:flex;flex-wrap:wrap;gap:7px}
+.logic-examples button{font-size:11px}
+.logic-tool-fields:disabled,.logic-examples button:disabled{opacity:.6}
+.logic-save-status{color:#385b76;font-size:12px;line-height:1.6}
+.logic-module .result-top{flex-wrap:wrap;gap:14px}
+.logic-module .result-top>div:first-child{flex:1;min-width:min(100%,230px)}
+.logic-validity-guide{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:16px;padding:17px;border:1px solid #dce6ef;border-radius:9px;background:#edf4fa;font-size:12px;color:#355871}
+.logic-validity-guide strong{color:#85472e}
+@media(max-width:1150px){.logic-module .workspace-grid{grid-template-columns:1fr}}
+@media(max-width:1100px){.logic-topic-nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.logic-syllabus{padding:18px 14px}.logic-syllabus-header,.logic-topic-heading{align-items:flex-start;flex-direction:column;gap:12px}.logic-topic-nav button{padding:10px;gap:7px}.logic-topic-nav button strong{font-size:12px}.logic-topic-nav button>svg{display:none}.logic-topic-nav button>span{width:24px;height:24px}.logic-lessons summary{padding:14px;font-size:14px}.logic-lessons details>div{padding:0 14px 14px}.logic-lessons p,.logic-topic-heading p{font-size:15px}.logic-quiz{padding:18px 15px}.logic-quiz-options{display:grid}.logic-quiz-options button,.logic-module .field input,.logic-module .field select,.logic-module .field textarea{font-size:16px}.logic-quiz h3{font-size:15px}.logic-feedback{font-size:14px}.logic-validity-guide{flex-direction:column;align-items:flex-start}.logic-validity-guide>svg{transform:rotate(90deg)}}
