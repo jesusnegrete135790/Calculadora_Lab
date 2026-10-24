@@ -20,9 +20,9 @@ npm ci
 npm run dev
 ```
 
-Abre <http://localhost:5173>. Usa **Crear una cuenta** para registro real; cada cálculo se guarda automáticamente. **Historial** recupera únicamente los registros de esa cuenta, con todos sus resultados y visualizaciones.
+Abre <http://localhost:5173> e inicia sesión con una cuenta activa registrada en SQL Server. Las cuentas se crean desde **Gestor de usuarios**, por un administrador; el registro público está deshabilitado. Cada cálculo se guarda automáticamente. **Historial** recupera únicamente los registros de esa cuenta, con todos sus resultados y visualizaciones.
 
-El modo demostración conserva el historial local previo y sigue funcionando sin API. Sus registros no se adjudican automáticamente a una cuenta: son datos del navegador, sin un propietario verificable.
+El laboratorio requiere autenticación y conexión con la API. No existe acceso de demostración ni historial compartido del navegador. Las sesiones guardadas se verifican con `/auth/me` antes de abrir el laboratorio.
 
 ## Documentación
 

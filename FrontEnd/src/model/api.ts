@@ -5,7 +5,7 @@ const KEY = 'lab-session-v1';
 export function readSession(): UserSession | null {
   try {
     const data: unknown = JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
-    if (data && typeof data === 'object' && 'mode' in data && data.mode === 'api' && 'name' in data && typeof data.name === 'string' && 'token' in data && typeof data.token === 'string') return { ...data as UserSession, roleVerified: false };
+    if (data && typeof data === 'object' && 'mode' in data && data.mode === 'api' && 'name' in data && typeof data.name === 'string' && 'token' in data && typeof data.token === 'string' && data.token.trim()) return { ...data as UserSession, roleVerified: false };
     return null;
   } catch { return null; }
 }
@@ -47,9 +47,6 @@ export function isAdministrator(session: UserSession | null): boolean {
 }
 export async function login(email: string, password: string): Promise<UserSession> {
   return sessionFrom(await request<SessionPayload>('/auth/login', { method: 'POST', body: JSON.stringify({ correo: email, contrasena: password }) }, ''));
-}
-export async function register(name: string, email: string, password: string): Promise<UserSession> {
-  return sessionFrom(await request<SessionPayload>('/auth/register', { method: 'POST', body: JSON.stringify({ nombre: name, correo: email, contrasena: password }) }, ''));
 }
 export function me(token: string) { return request<SessionPayload['usuario']>('/auth/me', {}, token); }
 export function listUserRoles(token: string) { return request<UserRole[]>('/usuarios/roles', {}, token); }

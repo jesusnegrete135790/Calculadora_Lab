@@ -4,7 +4,6 @@ from threading import Lock
 from time import monotonic
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from sqlalchemy import select, union_all, literal
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app import models as m, schemas as s, repositories as repo
 from app.database import get_db
@@ -45,20 +44,9 @@ def user_out(user):
     return s.UserOut(id=user.id, nombre=user.nombre, correo=user.correo, rol=user.rol, activo=user.activo)
 
 
-@router.post('/auth/register', tags=['Auth'], response_model=s.SessionOut, status_code=201)
-def register(payload: s.Register, request: Request, db: Session = Depends(get_db)):
-    limiter.check(('register', request.client.host if request.client else 'unknown'), 10)
-    if db.scalar(select(m.Usuario.id).where(m.Usuario.correo == str(payload.correo))):
-        raise HTTPException(409, 'Ya existe una cuenta con ese correo')
-    user = m.Usuario(nombre=payload.nombre, correo=str(payload.correo), contrasena=hasher.hash(payload.contrasena), rol='Usuario')
-    try:
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(409, 'Ya existe una cuenta con ese correo') from None
-    return s.SessionOut(token=create_token(user.id), usuario=user_out(user))
+@router.post('/auth/register', include_in_schema=False)
+def register():
+    raise HTTPException(403, 'El registro público está deshabilitado. Solicita tu cuenta al administrador.')
 
 
 @router.post('/auth/login', tags=['Auth'], response_model=s.SessionOut)

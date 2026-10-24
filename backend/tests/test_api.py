@@ -23,7 +23,7 @@ def test_auth(client, account, database):
         user = db.get(m.Usuario, account['usuario']['id'])
         assert user.contrasena.startswith('$argon2id$')
         assert verify_password('Contraseña123!', user.contrasena)
-    assert client.post('/api/auth/register', json={'nombre':'Otro','correo':'ALUMNO@example.com','contrasena':'Contraseña123!'}).status_code == 409
+    assert client.post('/api/auth/register', json={'nombre':'Otro','correo':'ALUMNO@example.com','contrasena':'Contraseña123!'}).status_code == 403
     assert client.post('/api/auth/login', json={'correo':'alumno@example.com','contrasena':'Contraseña123!'}).status_code == 200
     assert client.post('/api/auth/login', json={'correo':'alumno@example.com','contrasena':'incorrecta'}).status_code == 401
     assert client.post('/api/auth/login', json={'correo':'nadie@example.com','contrasena':'incorrecta'}).status_code == 401
@@ -32,7 +32,7 @@ def test_auth(client, account, database):
 
 
 @pytest.mark.parametrize('fixture', FIXTURES, ids=[f"{v['module']}-{v['payload']['method']}-{i}" for i,v in enumerate(FIXTURES)])
-def test_all_frontend_results(client, headers, database, fixture):
+def test_all_frontend_results(client, headers, database, fixture, account_factory):
     module, payload = fixture['module'], fixture['payload']
     response = client.post('/api/'+module, json=payload, headers=headers)
     assert response.status_code == 201, response.text
@@ -58,7 +58,7 @@ def test_all_frontend_results(client, headers, database, fixture):
             assert db.scalar(select(m.Computacional)).polinomio
         if module == 'estadistica':
             assert db.scalar(select(func.count()).select_from(m.Frecuencia)) == len(payload['result']['table']['rows'])
-    other = client.post('/api/auth/register',json={'nombre':'Otro','correo':'otro@example.com','contrasena':'Contraseña123!'}).json()
+    other = account_factory('otro@example.com', 'Otro')
     other_headers={'Authorization':'Bearer '+other['token']}
     assert client.get(f'/api/{module}/{record_id}',headers=other_headers).status_code == 404
     assert client.delete(f'/api/{module}/{record_id}',headers=other_headers).status_code == 404
@@ -72,10 +72,10 @@ def test_all_frontend_results(client, headers, database, fixture):
 
 
 def test_validation_and_no_password_echo(client, headers):
-    response = client.post('/api/auth/register',json={'nombre':'  ','correo':'invalid','contrasena':'secret'})
+    response = client.post('/api/auth/login',json={'correo':'invalid','contrasena':'secret'})
     assert response.status_code == 422
     assert 'secret' not in response.text
-    assert client.post('/api/auth/register',json={'nombre':'A','correo':'new@example.com','contrasena':'Valid12345','rol':'Administrador'}).status_code == 422
+    assert client.post('/api/auth/register',json={'nombre':'A','correo':'new@example.com','contrasena':'Valid12345','rol':'Administrador'}).status_code == 403
     invalid = copy.deepcopy(FIXTURES[0]['payload']); invalid['IdUsuario'] = 100
     assert client.post('/api/logica',json=invalid,headers=headers).status_code == 422
     assert client.post('/api/logica',json={},headers=headers).status_code == 422
@@ -121,7 +121,7 @@ def test_ai_disabled(client, headers):
     assert client.get('/api/asistente/historial',headers=headers).json() == []
 
 
-def test_ai_history_is_owned(client, headers):
+def test_ai_history_is_owned(client, headers, account_factory):
     class FakeProvider:
         async def answer(self, question, module):
             return 'Explicación de prueba inyectada, sin llamar a proveedores externos.'
@@ -129,7 +129,7 @@ def test_ai_history_is_owned(client, headers):
     response=client.post('/api/asistente/preguntar',headers=headers,json={'pregunta':'¿Qué es una derivada?','moduloRelacionado':'Matemáticas computacionales'})
     assert response.status_code == 200
     assert len(client.get('/api/asistente/historial',headers=headers).json()) == 1
-    other=client.post('/api/auth/register',json={'nombre':'Otro','correo':'otro@example.com','contrasena':'Contraseña123!'}).json()
+    other=account_factory('otro@example.com', 'Otro')
     assert client.get('/api/asistente/historial',headers={'Authorization':'Bearer '+other['token']}).json() == []
 
 

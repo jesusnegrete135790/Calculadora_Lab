@@ -21,7 +21,7 @@ tools/                     Ejecutores de migración y actualización de hashes
 tests/                     Pruebas aisladas y contra SQL Server
 ```
 
-La contraseña nunca sale de la API. Los registros se filtran usando el usuario del JWT, incluso para detalle y DELETE. El registro asigna siempre `Usuario`; el rol no se toma del navegador. `GET /api/usuarios` exige `Administrador`, consultado desde la base. No hay una ruta pública para concederse ese rol.
+La contraseña nunca sale de la API. Los registros se filtran usando el usuario del JWT, incluso para detalle y DELETE. El registro público está cerrado; la creación de cuentas y asignación de roles exige un administrador autenticado. `GET /api/usuarios` exige `Administrador`, consultado desde la base. No hay una ruta pública para concederse ese rol.
 
 ## Requisitos e instalación
 
@@ -141,7 +141,7 @@ El cliente central está en `FrontEnd/src/model/api.ts`; admite la variable prov
 
 | Ruta | Acción |
 |---|---|
-| `POST /api/auth/register` | `{nombre, correo, contrasena}`; contraseña de 10–128 caracteres |
+| `POST /api/auth/register` | Deshabilitado: devuelve 403 y no crea usuarios |
 | `POST /api/auth/login` | `{correo, contrasena}` |
 | `GET /api/auth/me` | Usuario del token |
 | `GET /api/usuarios` | Lista paginada, solo Administrador |
@@ -155,9 +155,9 @@ El cliente central está en `FrontEnd/src/model/api.ts`; admite la variable prov
 | `GET /api/evaluaciones/historial` | Intentos y calificaciones de la cuenta |
 | `GET /api/evaluaciones/intentos/{id}` | Revisión de intento propio, con explicación |
 
-Registro y login devuelven `{token, token_type:"bearer", usuario:{id,nombre,correo,rol,activo}}`. Usa `Authorization: Bearer <token>` en rutas protegidas. Swagger permite ingresar ese token con **Authorize**. El token se conserva en `sessionStorage`, se elimina al cerrar sesión y un 401 devuelve al acceso. El cierre de sesión es del cliente. Cambiar la contraseña, el rol o el estado de una cuenta incrementa su versión de token y revoca todas sus sesiones anteriores.
+El login devuelve `{token, token_type:"bearer", usuario:{id,nombre,correo,rol,activo}}`. Usa `Authorization: Bearer <token>` en rutas protegidas. Swagger permite ingresar ese token con **Authorize**. El token se conserva en `sessionStorage`; `/auth/me` verifica al usuario antes de abrir el laboratorio. Se elimina al cerrar sesión y un 401 devuelve al acceso. El frontend no ofrece demostración ni registro público. Las cuentas se crean con un administrador en `POST /api/usuarios` o con la herramienta de bootstrap inicial. El cierre de sesión es del cliente. Cambiar la contraseña, el rol o el estado de una cuenta incrementa su versión de token y revoca todas sus sesiones anteriores.
 
-Los POST de cálculos reciben `{method, input, result}`. `method` es el nombre visible; `input` conserva los tipos del frontend (la lógica usa una cadena). `result` es `CalculationResult`, con sus tablas y visualizaciones; las EDO requieren `numericRows`, y las interpolaciones `polynomial`. La descriptiva añade `metrics`. Swagger muestra todos los campos y sus límites.
+Los POST de cálculos reciben `{method, input, result}`. `method` es el nombre visible; `input` conserva los tipos del frontend (la lógica admite la cadena anterior y las entradas estructuradas de sus herramientas). `result` es `CalculationResult`, con sus tablas y visualizaciones; las EDO requieren `numericRows`, y las interpolaciones `polynomial`. La descriptiva añade `metrics`. Las matrices usan `{method, matrix, secondMatrix?, tolerance}` con métodos `matriz-reduccion` (Gauss), `matriz-gauss-jordan`, `matriz-inversa` o `matriz-suma`; requieren una tabla final y `matrixSteps`. El método de inversa acepta `inverseOnly: true` para recibir A cuadrada sin b; de lo contrario recibe [A | b] cuadrada en sus coeficientes. Sus pasos usan bloques de hasta 6 × 12 con `splitAt` para separar A de I. Se guardan en `EntradaJSON`/`ResultadoJSON` de computacionales, sin generar filas de iteración ni requerir migración SQL. Swagger muestra todos los campos y sus límites.
 
 Ejemplo de lógica, con todos los campos mínimos:
 
@@ -174,7 +174,7 @@ Ejemplo de lógica, con todos los campos mínimos:
 }
 ```
 
-El frontend devuelve inmediatamente el resultado del algoritmo local; luego informa **Guardado en tu historial** o muestra el error sin ocultarlo. En modo de cuenta no se copia el historial privado al historial compartido de demostración. Las distribuciones del módulo de estadística se envían a `/api/distribuciones`.
+El frontend devuelve inmediatamente el resultado del algoritmo local; luego informa **Guardado en tu historial** o muestra el error sin ocultarlo. Los registros se asocian exclusivamente a la cuenta autenticada. Las distribuciones del módulo de estadística se envían a `/api/distribuciones`.
 
 Los listados aceptan `offset` y `limit` (1–100). La pantalla de historial carga 50 registros por página y ofrece **Cargar más**; permite borrar el cálculo seleccionado. Los IDs visibles llevan prefijo, por ejemplo `logica:12`; las rutas usan solo la parte numérica, siempre con filtro por propietario.
 
@@ -251,7 +251,7 @@ Referencias de implementación: [FastAPI JWT](https://fastapi.tiangolo.com/tutor
 
 Aplica `004_user_management.sql` antes de arrancar esta versión; añade `Usuarios.Activo` y `Usuarios.VersionToken`, conserva las cuentas existentes activas y permite ejecutar de nuevo la migración. No se modifica la base automáticamente al arrancar.
 
-El catálogo actual admite exclusivamente `Usuario` y `Administrador`; el gestor consulta esos roles en el backend. El registro público sigue asignando siempre `Usuario`. Para habilitar **el primer administrador**, registra una cuenta y ejecuta desde una terminal con acceso autorizado a la base:
+El catálogo actual admite exclusivamente `Usuario` y `Administrador`; el gestor consulta esos roles en el backend. El registro público está deshabilitado. Para habilitar **el primer administrador**, utiliza una cuenta activa ya existente en la base y ejecuta desde una terminal con acceso autorizado:
 
 ```powershell
 python tools/bootstrap_admin.py --email tu-correo@example.com
@@ -259,7 +259,7 @@ python tools/bootstrap_admin.py --email tu-correo@example.com
 
 La herramienta exige una cuenta activa ya registrada y se niega a operar cuando existe un administrador activo. Después vuelve a iniciar sesión. Los demás administradores se asignan desde el gestor.
 
-La opción **Gestor de usuarios** aparece en el lateral: solo se habilita para una sesión real con rol `Administrador` verificado. Se conserva el ID y el rol del login, y `/auth/me` actualiza el perfil al restaurar la sesión, al recuperar el foco, cada minuto y cuando el servidor rechaza permisos. Las cuentas normales y la demostración ven la opción desactivada; la ruta directa también está protegida. La autorización efectiva ocurre siempre en el backend, consultando la base en cada petición.
+La opción **Gestor de usuarios** aparece en el lateral: solo se habilita para una sesión real con rol `Administrador` verificado. Se conserva el ID y el rol del login, y `/auth/me` actualiza el perfil al restaurar la sesión, al recuperar el foco, cada minuto y cuando el servidor rechaza permisos. Las cuentas normales ven la opción desactivada; la ruta directa también está protegida. La autorización efectiva ocurre siempre en el backend, consultando la base en cada petición.
 
 | Ruta administrativa | Acción |
 |---|---|

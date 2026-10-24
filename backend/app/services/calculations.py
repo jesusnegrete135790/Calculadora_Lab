@@ -80,7 +80,7 @@ def save(db, module, payload, user_id):
             for period in sorted(changes.keys() | payments.keys()):
                 children.append(m.Regla(periodo=period, tasa=number(changes.get(period), 4, 8), pago=number(payments.get(period), 2)))
     elif module == 'computacionales':
-        data['funcion'] = inp.expression
+        data['funcion'] = inp.method if inp.method.startswith('matriz-') else inp.expression
         if inp.method in ['biseccion', 'newton']:
             data['raiz'] = number(result.value)
         data['polinomio'] = result.polynomial

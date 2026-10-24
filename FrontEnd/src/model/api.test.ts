@@ -13,6 +13,13 @@ afterEach(() => {
 });
 
 describe('inicio de sesión', () => {
+  it('ignora sesiones antiguas de demostración y tokens vacíos', async () => {
+    const { readSession } = await import('./api');
+    for (const value of [{ mode: 'demo', name: 'Estudiante' }, { mode: 'api', name: 'Estudiante', token: '' }, { mode: 'api', name: 'Estudiante', token: '   ' }]) {
+      vi.stubGlobal('sessionStorage', { getItem: () => JSON.stringify(value) });
+      expect(readSession()).toBeNull();
+    }
+  });
   it('no solicita ni concede acceso sin un backend configurado', async () => {
     vi.stubEnv('VITE_API_URL', '');
     vi.stubEnv('VITE_API_BASE_URL', '');
@@ -72,7 +79,7 @@ describe('permisos y gestión de usuarios', () => {
     expect(isAdministrator(session)).toBe(true);
     expect(isAdministrator({ ...session, role: 'Usuario' })).toBe(false);
     expect(isAdministrator({ ...session, roleVerified: false })).toBe(false);
-    expect(isAdministrator({ ...session, mode: 'demo' })).toBe(false);
+    expect(isAdministrator({ ...session, token: '' })).toBe(false);
     expect(isAdministrator(null)).toBe(false);
   });
 
