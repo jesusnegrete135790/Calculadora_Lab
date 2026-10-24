@@ -6,7 +6,7 @@ import InstitutionalWatermark from '../components/InstitutionalWatermark';
 const modules = [
   { id: 'logica', label: 'Lógica matemática', description: 'Siete temas con teoría, ejemplos y herramientas de práctica.', icon: BrainCircuit, color: 'indigo', tools: 'Inferencia · Validez · Inducción · Álgebra' },
   { id: 'finanzas', label: 'Matemáticas financieras', description: 'Interés, descuentos y tablas de amortización explicadas.', icon: Calculator, color: 'amber', tools: 'Interés · Descuentos · Amortización' },
-  { id: 'computacionales', label: 'Mat. computacionales', description: 'Raíces, interpolación y ecuaciones diferenciales.', icon: Sigma, color: 'teal', tools: 'Raíces · Interpolación · EDO' },
+  { id: 'computacionales', label: 'Mat. computacionales', description: 'Matrices, sistemas lineales, raíces y ecuaciones diferenciales.', icon: Sigma, color: 'teal', tools: 'Matrices · Gauss-Jordan · Raíces · EDO' },
   { id: 'estadistica', label: 'Probabilidad y estadística', description: 'Medidas descriptivas y distribuciones de probabilidad.', icon: ChartNoAxesCombined, color: 'rose', tools: 'Datos · Binomial · Poisson · Normal' },
 ];
 

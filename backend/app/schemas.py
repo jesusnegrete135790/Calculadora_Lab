@@ -161,6 +161,22 @@ class Metrics(Schema):
     curtosis: Number
 
 
+class MatrixStep(Schema):
+    title: Text
+    matrix: list[list[Finite]] = Field(min_length=1, max_length=6)
+    augmented: bool | None = None
+    splitAt: int | None = Field(default=None, ge=1, le=6)
+
+    @model_validator(mode='after')
+    def dimensions(self):
+        width = len(self.matrix[0])
+        if not 1 <= width <= 12 or any(len(row) != width for row in self.matrix):
+            raise ValueError('Matriz de procedimiento inválida')
+        if self.splitAt is not None and (self.splitAt >= width or self.augmented):
+            raise ValueError('Separación entre bloques de matriz inválida')
+        return self
+
+
 class Result(Schema):
     title: Text
     value: str = Field(min_length=1, max_length=2000)
@@ -175,6 +191,7 @@ class Result(Schema):
     note: str | None = Field(default=None, max_length=5000)
     numericRows: list[NumericRow] | None = Field(default=None, max_length=201)
     polynomial: str | None = Field(default=None, max_length=10000)
+    matrixSteps: list[MatrixStep] | None = Field(default=None, max_length=100)
     metrics: Metrics | None = None
 
 
@@ -242,6 +259,32 @@ class NumericInput(Schema):
                     raise ValueError('Los valores x no pueden repetirse')
             except ArithmeticError:
                 raise ValueError('Puntos inválidos') from None
+        return self
+
+
+class MatrixInput(Schema):
+    method: Literal['matriz-gauss-jordan', 'matriz-reduccion', 'matriz-inversa', 'matriz-suma']
+    matrix: list[list[Annotated[float, Field(allow_inf_nan=False, ge=-1e9, le=1e9)]]] = Field(min_length=1, max_length=6)
+    secondMatrix: list[list[Annotated[float, Field(allow_inf_nan=False, ge=-1e9, le=1e9)]]] | None = Field(default=None, min_length=1, max_length=6)
+    tolerance: Finite = Field(ge=1e-14, le=1e-4)
+    inverseOnly: bool | None = None
+
+    @model_validator(mode='after')
+    def dimensions(self):
+        width = len(self.matrix[0])
+        sum_matrices = self.method == 'matriz-suma'
+        plain_matrix = sum_matrices or self.inverseOnly
+        if not (1 if plain_matrix else 2) <= width <= (6 if plain_matrix else 7) or any(len(row) != width for row in self.matrix):
+            raise ValueError('Dimensiones de matriz inválidas')
+        if self.inverseOnly is not None and self.method != 'matriz-inversa':
+            raise ValueError('La opción inverseOnly requiere el método de matriz inversa')
+        if self.method == 'matriz-inversa' and width != len(self.matrix) + (0 if self.inverseOnly else 1):
+            raise ValueError('La inversa requiere una matriz A cuadrada y, al resolver un sistema, una columna b')
+        if sum_matrices:
+            if self.secondMatrix is None or len(self.secondMatrix) != len(self.matrix) or any(len(row) != width for row in self.secondMatrix):
+                raise ValueError('La suma requiere matrices A y B de las mismas dimensiones')
+        elif self.secondMatrix is not None:
+            raise ValueError('El sistema requiere solamente una matriz aumentada')
         return self
 
 
@@ -380,11 +423,31 @@ class FinanceCalculation(Calculation):
 
 
 class NumericCalculation(Calculation):
-    input: NumericInput
+    input: Annotated[NumericInput | MatrixInput, Field(discriminator='method')]
 
     @model_validator(mode='after')
     def required_details(self):
         method = self.input.method
+        if isinstance(self.input, MatrixInput):
+            table = self.result.table
+            if not table or len(table.rows) != len(self.input.matrix) or len(table.columns) != len(self.input.matrix[0]):
+                raise ValueError('Tabla de matriz requerida con las dimensiones de entrada')
+            if any(not isinstance(v, (float, int)) or not math.isfinite(v) for row in table.rows for v in row):
+                raise ValueError('Elementos de resultado de matriz inválidos')
+            if not self.result.matrixSteps:
+                raise ValueError('Procedimiento matricial requerido')
+            if method == 'matriz-inversa':
+                size = len(self.input.matrix)
+                if any(len(step.matrix) != size or len(step.matrix[0]) not in {size, 2 * size, 1} or step.augmented or (step.splitAt != size if len(step.matrix[0]) == 2 * size else step.splitAt is not None) for step in self.result.matrixSteps):
+                    raise ValueError('Los bloques de la inversa deben conservar las dimensiones de [A | I]')
+                first = self.result.matrixSteps[0]
+                if len(first.matrix[0]) != 2 * size or first.splitAt != size:
+                    raise ValueError('Se requiere la ampliación inicial [A | I]')
+            elif any(len(step.matrix) != len(self.input.matrix) or len(step.matrix[0]) != len(self.input.matrix[0]) or bool(step.augmented) != (method != 'matriz-suma') or step.splitAt is not None for step in self.result.matrixSteps):
+                raise ValueError('Procedimiento matricial requerido y consistente con la entrada')
+            if self.result.numericRows is not None or self.result.polynomial is not None:
+                raise ValueError('Las matrices no generan iteraciones numéricas ni polinomios')
+            return self
         if method in ['biseccion', 'newton'] and self.result.table:
             rows = self.result.table.rows
             if len(self.result.table.columns) != 6 or len(rows) > self.input.iterations or any(row[0] != index or not isinstance(row[5], (float, int)) or row[5] < 0 for index, row in enumerate(rows, 1)):

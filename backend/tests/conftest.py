@@ -69,10 +69,22 @@ def client(database):
 
 
 @pytest.fixture
-def account(client):
-    response = client.post('/api/auth/register', json={'nombre':'Alumno', 'correo':'alumno@example.com', 'contrasena':'Contraseña123!'} )
-    assert response.status_code == 201, response.text
-    return response.json()
+def account_factory(client, database):
+    from app.core.security import hasher
+
+    def create(correo='alumno@example.com', nombre='Alumno'):
+        with database[1]() as db:
+            db.add(m.Usuario(nombre=nombre, correo=correo, contrasena=hasher.hash('Contraseña123!'), rol='Usuario', activo=True))
+            db.commit()
+        response = client.post('/api/auth/login', json={'correo': correo, 'contrasena': 'Contraseña123!'})
+        assert response.status_code == 200, response.text
+        return response.json()
+    return create
+
+
+@pytest.fixture
+def account(account_factory):
+    return account_factory()
 
 
 @pytest.fixture

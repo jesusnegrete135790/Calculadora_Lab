@@ -19,7 +19,7 @@ const backendDocumentationMembers = [
 ];
 
 const languages = [
-  { name: 'TypeScript', use: 'Interfaz y cálculos de demostración' },
+  { name: 'TypeScript', use: 'Interfaz y algoritmos matemáticos' },
   { name: 'JavaScript', use: 'Ejecución en el navegador' },
   { name: 'HTML', use: 'Estructura de las páginas' },
   { name: 'CSS', use: 'Diseño y presentación' },

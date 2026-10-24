@@ -8,7 +8,7 @@ import StatisticsView from '../modules/StatisticsView';
 const configs = {
   logica: { eyebrow: 'MÓDULO 01', title: 'Lógica matemática', description: 'Explora proposiciones, inferencias, equivalencias, validez, inducción y álgebra booleana.', icon: BrainCircuit, className: 'indigo', view: LogicView },
   finanzas: { eyebrow: 'MÓDULO 02', title: 'Matemáticas financieras', description: 'Compara intereses, calcula descuentos y crea tablas de amortización.', icon: Calculator, className: 'amber', view: FinanceView },
-  computacionales: { eyebrow: 'MÓDULO 03', title: 'Matemáticas computacionales', description: 'Aproxima raíces, interpola puntos y resuelve ecuaciones diferenciales.', icon: Sigma, className: 'teal', view: NumericView },
+  computacionales: { eyebrow: 'MÓDULO 03', title: 'Matemáticas computacionales', description: 'Resuelve matrices y sistemas lineales, aproxima raíces e integra ecuaciones diferenciales.', icon: Sigma, className: 'teal', view: NumericView },
   estadistica: { eyebrow: 'MÓDULO 04', title: 'Probabilidad y estadística', description: 'Explora datos y distribuciones con resultados explicados.', icon: ChartNoAxesCombined, className: 'rose', view: StatisticsView },
 };
 

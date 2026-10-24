@@ -4,6 +4,7 @@ import { useCalculationController } from '../../controller/useCalculationControl
 import { calculateNumeric, type NumericInput, type NumericMethod } from '../../model/numeric';
 import { NumberField, TextField } from '../components/Fields';
 import ResultPanel from '../components/ResultPanel';
+import MatrixView from './MatrixView';
 
 const names: Record<NumericMethod, string> = {
   biseccion: 'Bisección',
@@ -16,7 +17,7 @@ const names: Record<NumericMethod, string> = {
   'superficie-3d': 'Superficie 3D f(x,y)',
 };
 
-export default function NumericView() {
+function NumericMethods() {
   const [input, setInput] = useState<NumericInput>({
     method: 'biseccion', expression: 'x^3-x-2', a: 1, b: 2, x0: 1.5, y0: 1,
     tolerance: 0.000001, iterations: 20, points: '0,1; 1,3; 2,7', yMin: -2, yMax: 2,
@@ -64,4 +65,9 @@ export default function NumericView() {
     </section>
     <div>{(controller.saving || controller.saveStatus) && <p className="no-print" role="status">{controller.saving ? "Guardando…" : controller.saveStatus}</p>}<ResultPanel result={controller.result} error={controller.error} reset={controller.reset}/></div>
   </div>;
+}
+
+export default function NumericView() {
+  const [section, setSection] = useState<'matrices' | 'numericos'>('matrices');
+  return <><nav className="numeric-section-nav no-print" aria-label="Herramientas de matemáticas computacionales"><button type="button" aria-pressed={section === 'matrices'} onClick={() => setSection('matrices')}>Matrices y sistemas lineales</button><button type="button" aria-pressed={section === 'numericos'} onClick={() => setSection('numericos')}>Métodos numéricos</button></nav>{section === 'matrices' ? <MatrixView/> : <NumericMethods/>}</>;
 }

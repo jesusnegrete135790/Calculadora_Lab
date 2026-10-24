@@ -38,8 +38,16 @@ export interface CalculationResult {
   circuitTerms?: string[][];
   note?: string;
   polynomial?: string;
+  matrixSteps?: MatrixStep[];
   numericRows?: Array<{ numero: number; x?: number | string; y?: number | string; aproximado?: number | string; error?: number | string; k1?: number | string; k2?: number | string; k3?: number | string; k4?: number | string }>;
   metrics?: { media: number | string; desviacion: number | string; asimetria: number | string; curtosis: number | string };
+}
+
+export interface MatrixStep {
+  title: string;
+  matrix: number[][];
+  augmented?: boolean;
+  splitAt?: number;
 }
 
 export interface HistoryRecord {
@@ -54,7 +62,7 @@ export interface HistoryRecord {
 export interface UserSession {
   name: string;
   email?: string;
-  mode: 'demo' | 'api';
+  mode: 'api';
   token?: string;
   id?: number;
   role?: UserRole;
