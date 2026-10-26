@@ -62,6 +62,14 @@ export default function CopyrightPage() {
 
   {/* Contenedor de texto */}
   <div>
+    {/* Imagen inferior (Logo Equipo) */}
+  <div>
+    <img 
+      src="/logo-equipo.jpeg" 
+      alt="Logo del equipo"
+      style={{ maxWidth: '120px', height: 'auto' }}
+    />
+  </div>
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
       <Copyright size={24}/>
       <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f2b4a' }}>Laboratorio Matemático</h2>
@@ -80,14 +88,7 @@ export default function CopyrightPage() {
     </div>
   </div>
 
-  {/* Imagen inferior (Logo Equipo) */}
-  <div>
-    <img 
-      src="/logo-equipo.jpeg" 
-      alt="Logo del equipo"
-      style={{ maxWidth: '120px', height: 'auto' }}
-    />
-  </div>
+  
 </section>
 
     <section className="credits-section" aria-labelledby="credits-title">
