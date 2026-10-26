@@ -12,7 +12,7 @@ npm install
 npm run dev
 ```
 
-Abre `http://localhost:5173` e inicia sesión con una cuenta activa registrada en SQL Server. El acceso requiere el backend en `http://localhost:8000`. El formulario ofrece únicamente login; las cuentas se crean desde el gestor por un administrador.
+Abre `http://localhost:5173` e inicia sesión con una cuenta activa registrada en SQL Server. El acceso requiere el backend en `http://localhost:8000`. El formulario permite iniciar sesión o registrar una cuenta únicamente con nombre, correo y contraseña (mínimo 10 caracteres). El registro se guarda mediante la API con rol Usuario.
 
 Si falta `VITE_API_URL`, el formulario muestra un error de configuración y no permite acceder. Copia `.env.example` a `.env.local` y reinicia `npm run dev`. Vite no carga `.env.example` automáticamente. Consulta [la guía del backend](../backend/README.md) para configurar la API y SQL Server.
 
@@ -86,7 +86,7 @@ Para regenerar los casos de API de matrices: `node scripts/generate-matrix-fixtu
 
 El backend completo está en `../backend`. Configura `VITE_API_URL=http://localhost:8000/api` copiando `.env.example` a `.env.local` y sigue [su guía](../backend/README.md).
 
-El formulario permite iniciar sesión con una cuenta existente. El registro público está deshabilitado y las cuentas se administran mediante el gestor de usuarios. El JWT se conserva en sessionStorage, se verifica contra `/auth/me` antes de mostrar el laboratorio y se elimina al salir, caducar o fallar su verificación. Los algoritmos muestran su resultado y luego lo envían a la API. Un mensaje indica guardado correcto o el error; **Historial** recupera exclusivamente los cálculos de la cuenta, incluidos procedimientos, gráficos, tablas, Karnaugh y circuitos. **Evaluaciones** obtiene preguntas del backend, envía respuestas para calificarlas en el servidor y recupera intentos anteriores de la cuenta.
+El formulario permite iniciar sesión con una cuenta existente o registrar una nueva en la BD mediante `/auth/register`. El servidor asigna el rol Usuario y los administradores gestionan roles y estado mediante el gestor de usuarios. El JWT se conserva en sessionStorage, se verifica contra `/auth/me` antes de mostrar el laboratorio y se elimina al salir, caducar o fallar su verificación. Los algoritmos muestran su resultado y luego lo envían a la API. Un mensaje indica guardado correcto o el error; **Historial** recupera exclusivamente los cálculos de la cuenta, incluidos procedimientos, gráficos, tablas, Karnaugh y circuitos. **Evaluaciones** obtiene preguntas del backend, envía respuestas para calificarlas en el servidor y recupera intentos anteriores de la cuenta.
 
 Las calculadoras no conceden acceso anónimo. Las sesiones antiguas de demostración se ignoran y los datos locales antiguos no se leen ni se importan a una cuenta. El asistente requiere login y configuración del proveedor en el backend; sus consultas anteriores se muestran en la misma página. Las evaluaciones requieren una cuenta porque sus preguntas, respuestas y calificaciones se guardan en SQL Server.
 

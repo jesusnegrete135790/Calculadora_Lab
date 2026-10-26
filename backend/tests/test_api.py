@@ -23,7 +23,7 @@ def test_auth(client, account, database):
         user = db.get(m.Usuario, account['usuario']['id'])
         assert user.contrasena.startswith('$argon2id$')
         assert verify_password('Contraseña123!', user.contrasena)
-    assert client.post('/api/auth/register', json={'nombre':'Otro','correo':'ALUMNO@example.com','contrasena':'Contraseña123!'}).status_code == 403
+    assert client.post('/api/auth/register', json={'nombre':'Otro','correo':'ALUMNO@example.com','contrasena':'Contraseña123!'}).status_code == 409
     assert client.post('/api/auth/login', json={'correo':'alumno@example.com','contrasena':'Contraseña123!'}).status_code == 200
     assert client.post('/api/auth/login', json={'correo':'alumno@example.com','contrasena':'incorrecta'}).status_code == 401
     assert client.post('/api/auth/login', json={'correo':'nadie@example.com','contrasena':'incorrecta'}).status_code == 401
@@ -75,7 +75,7 @@ def test_validation_and_no_password_echo(client, headers):
     response = client.post('/api/auth/login',json={'correo':'invalid','contrasena':'secret'})
     assert response.status_code == 422
     assert 'secret' not in response.text
-    assert client.post('/api/auth/register',json={'nombre':'A','correo':'new@example.com','contrasena':'Valid12345','rol':'Administrador'}).status_code == 403
+    assert client.post('/api/auth/register',json={'nombre':'A','correo':'new@example.com','contrasena':'Valid12345','rol':'Administrador'}).status_code == 422
     invalid = copy.deepcopy(FIXTURES[0]['payload']); invalid['IdUsuario'] = 100
     assert client.post('/api/logica',json=invalid,headers=headers).status_code == 422
     assert client.post('/api/logica',json={},headers=headers).status_code == 422

@@ -13,6 +13,19 @@ afterEach(() => {
 });
 
 describe('inicio de sesión', () => {
+  it('registra los datos de la cuenta en la API sin enviar roles ni un token anterior', async () => {
+    await configuredLogin();
+    const { register } = await import('./api');
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      token: 'nuevo-token', usuario: { id: 3, nombre: 'Nueva', correo: 'new@example.com', rol: 'Usuario', activo: true },
+    }), { status: 201 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(register('Nueva', 'new@example.com', 'Contraseña123!')).resolves.toMatchObject({ id: 3, token: 'nuevo-token', mode: 'api', role: 'Usuario' });
+    expect(fetchMock).toHaveBeenCalledWith('https://backend.example/auth/register', expect.objectContaining({
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: 'Nueva', correo: 'new@example.com', contrasena: 'Contraseña123!' }),
+    }));
+  });
   it('ignora sesiones antiguas de demostración y tokens vacíos', async () => {
     const { readSession } = await import('./api');
     for (const value of [{ mode: 'demo', name: 'Estudiante' }, { mode: 'api', name: 'Estudiante', token: '' }, { mode: 'api', name: 'Estudiante', token: '   ' }]) {

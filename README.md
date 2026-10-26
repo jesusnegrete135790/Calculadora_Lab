@@ -20,7 +20,7 @@ npm ci
 npm run dev
 ```
 
-Abre <http://localhost:5173> e inicia sesión con una cuenta activa registrada en SQL Server. Las cuentas se crean desde **Gestor de usuarios**, por un administrador; el registro público está deshabilitado. Cada cálculo se guarda automáticamente. **Historial** recupera únicamente los registros de esa cuenta, con todos sus resultados y visualizaciones.
+Abre <http://localhost:5173> e inicia sesión con una cuenta activa registrada en SQL Server. Puedes crear tu cuenta desde **Registrar nuevo usuario** con nombre, correo y contraseña (mínimo 10 caracteres). La API la guarda en SQL Server con rol Usuario; los administradores gestionan roles y cuentas desde **Gestor de usuarios**. Cada cálculo se guarda automáticamente. **Historial** recupera únicamente los registros de esa cuenta, con todos sus resultados y visualizaciones.
 
 El laboratorio requiere autenticación y conexión con la API. No existe acceso de demostración ni historial compartido del navegador. Las sesiones guardadas se verifican con `/auth/me` antes de abrir el laboratorio.
 

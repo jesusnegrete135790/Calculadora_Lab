@@ -210,3 +210,4 @@
 @media print{.numeric-section-nav{display:none!important}.matrix-procedure::details-content{content-visibility:visible!important}.matrix-step .table-scroll{display:block;overflow:visible}.matrix-procedure>summary{display:none}.matrix-step h4{font-size:10px}.matrix-step td{padding:4px 8px}}
 
 @media print{.matrix-step table{table-layout:fixed;font-size:7px}.matrix-step td{padding:3px 2px;overflow-wrap:anywhere}.matrix-step .table-scroll{width:100%}}
+.access-mode-switch{margin-top:10px}

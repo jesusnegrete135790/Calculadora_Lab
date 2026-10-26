@@ -11,7 +11,7 @@ from app.core.security import current_user, require_role, create_token, hasher, 
 from app.services.calculations import save, serialize
 from app.services.ai_service import AIProvider, get_ai_provider
 from app.services.evaluations import ensure_catalog, exam_questions, question_options
-from app.services.users import create_user, update_user, delete_user
+from app.services.users import create_user, update_user, delete_user, ensure_email_available, commit_user
 
 router = APIRouter(prefix='/api')
 
@@ -44,9 +44,15 @@ def user_out(user):
     return s.UserOut(id=user.id, nombre=user.nombre, correo=user.correo, rol=user.rol, activo=user.activo)
 
 
-@router.post('/auth/register', include_in_schema=False)
-def register():
-    raise HTTPException(403, 'El registro público está deshabilitado. Solicita tu cuenta al administrador.')
+@router.post('/auth/register', tags=['Auth'], response_model=s.SessionOut, status_code=201)
+def register(payload: s.Register, request: Request, db: Session = Depends(get_db)):
+    limiter.check(('register', request.client.host if request.client else 'unknown'), 10)
+    ensure_email_available(db, str(payload.correo))
+    user = m.Usuario(nombre=payload.nombre, correo=str(payload.correo),
+                     contrasena=hasher.hash(payload.contrasena), rol='Usuario', activo=True)
+    db.add(user)
+    commit_user(db, user)
+    return s.SessionOut(token=create_token(user.id, user.token_version), usuario=user_out(user))
 
 
 @router.post('/auth/login', tags=['Auth'], response_model=s.SessionOut)

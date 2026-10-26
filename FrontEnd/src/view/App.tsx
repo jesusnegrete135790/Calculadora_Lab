@@ -15,7 +15,7 @@ import { SessionContext } from '../model/sessionContext';
 export default function App() {
   const auth = useSessionController();
   if (auth.verifying) return <main className="session-check" role="status">Verificando tu sesión con el servidor…</main>;
-  if (!auth.session) return <Routes><Route path="/derechos" element={<CopyrightPage/>}/><Route path="*" element={<AccessPage signIn={auth.signIn} loading={auth.loading} error={auth.error} />}/></Routes>;
+  if (!auth.session) return <Routes><Route path="/derechos" element={<CopyrightPage/>}/><Route path="*" element={<AccessPage signIn={auth.signIn} signUp={auth.signUp} clearError={auth.clearError} loading={auth.loading} error={auth.error} />}/></Routes>;
   return (
     <SessionContext.Provider value={auth.session}><Shell session={auth.session} signOut={auth.signOut}>
       <Routes>
