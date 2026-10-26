@@ -41,7 +41,7 @@ export default function CopyrightPage() {
 
     <section className="copyright-card">
       <img src="/unam-escudo-oscuro.png" alt="Escudo de la Universidad Nacional Autónoma de México"/>
-      <img src="/unam-escudo-oscuro.png" alt="Escudo de la Universidad Nacional Autónoma de México"/>
+      <img src="/logo-equipo.jpeg" alt="Logo del equipo"/>
       <div>
         <Copyright size={24}/>
         <h2>Laboratorio Matemático</h2>
