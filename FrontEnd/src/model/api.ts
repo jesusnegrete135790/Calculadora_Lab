@@ -49,6 +49,9 @@ export async function login(email: string, password: string): Promise<UserSessio
   return sessionFrom(await request<SessionPayload>('/auth/login', { method: 'POST', body: JSON.stringify({ correo: email, contrasena: password }) }, ''));
 }
 export function me(token: string) { return request<SessionPayload['usuario']>('/auth/me', {}, token); }
+export async function register(name: string, email: string, password: string): Promise<UserSession> {
+  return sessionFrom(await request<SessionPayload>('/auth/register', { method: 'POST', body: JSON.stringify({ nombre: name, correo: email, contrasena: password }) }, ''));
+}
 export function listUserRoles(token: string) { return request<UserRole[]>('/usuarios/roles', {}, token); }
 export function listUsers(token: string, filters: { offset: number; q: string; rol: string; activo: string }) {
   const query = new URLSearchParams({ offset: String(filters.offset), limit: '50' });

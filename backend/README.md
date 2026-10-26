@@ -21,7 +21,7 @@ tools/                     Ejecutores de migración y actualización de hashes
 tests/                     Pruebas aisladas y contra SQL Server
 ```
 
-La contraseña nunca sale de la API. Los registros se filtran usando el usuario del JWT, incluso para detalle y DELETE. El registro público está cerrado; la creación de cuentas y asignación de roles exige un administrador autenticado. `GET /api/usuarios` exige `Administrador`, consultado desde la base. No hay una ruta pública para concederse ese rol.
+La contraseña nunca sale de la API. Los registros se filtran usando el usuario del JWT, incluso para detalle y DELETE. El registro público recibe nombre, correo y contraseña, guarda su hash Argon2id y crea una cuenta activa con rol Usuario. La asignación de roles y la gestión de cuentas exige un administrador autenticado. `GET /api/usuarios` exige `Administrador`, consultado desde la base. No hay una ruta pública para concederse ese rol.
 
 ## Requisitos e instalación
 
@@ -141,7 +141,7 @@ El cliente central está en `FrontEnd/src/model/api.ts`; admite la variable prov
 
 | Ruta | Acción |
 |---|---|
-| `POST /api/auth/register` | Deshabilitado: devuelve 403 y no crea usuarios |
+| `POST /api/auth/register` | Registrar nombre, correo y contraseña; devuelve 201 con sesión de la nueva cuenta Usuario |
 | `POST /api/auth/login` | `{correo, contrasena}` |
 | `GET /api/auth/me` | Usuario del token |
 | `GET /api/usuarios` | Lista paginada, solo Administrador |
@@ -155,7 +155,7 @@ El cliente central está en `FrontEnd/src/model/api.ts`; admite la variable prov
 | `GET /api/evaluaciones/historial` | Intentos y calificaciones de la cuenta |
 | `GET /api/evaluaciones/intentos/{id}` | Revisión de intento propio, con explicación |
 
-El login devuelve `{token, token_type:"bearer", usuario:{id,nombre,correo,rol,activo}}`. Usa `Authorization: Bearer <token>` en rutas protegidas. Swagger permite ingresar ese token con **Authorize**. El token se conserva en `sessionStorage`; `/auth/me` verifica al usuario antes de abrir el laboratorio. Se elimina al cerrar sesión y un 401 devuelve al acceso. El frontend no ofrece demostración ni registro público. Las cuentas se crean con un administrador en `POST /api/usuarios` o con la herramienta de bootstrap inicial. El cierre de sesión es del cliente. Cambiar la contraseña, el rol o el estado de una cuenta incrementa su versión de token y revoca todas sus sesiones anteriores.
+El login devuelve `{token, token_type:"bearer", usuario:{id,nombre,correo,rol,activo}}`. Usa `Authorization: Bearer <token>` en rutas protegidas. Swagger permite ingresar ese token con **Authorize**. El token se conserva en `sessionStorage`; `/auth/me` verifica al usuario antes de abrir el laboratorio. Se elimina al cerrar sesión y un 401 devuelve al acceso. El frontend ofrece login y registro con nombre (1–100 caracteres), correo (hasta 100) y contraseña (10–128), sin modo demostración. `POST /api/auth/register` rechaza roles y campos administrativos; el servidor genera ID, fecha, estado activo y rol Usuario. Los administradores también pueden crear cuentas en `POST /api/usuarios`. El cierre de sesión es del cliente. Cambiar la contraseña, el rol o el estado de una cuenta incrementa su versión de token y revoca todas sus sesiones anteriores.
 
 Los POST de cálculos reciben `{method, input, result}`. `method` es el nombre visible; `input` conserva los tipos del frontend (la lógica admite la cadena anterior y las entradas estructuradas de sus herramientas). `result` es `CalculationResult`, con sus tablas y visualizaciones; las EDO requieren `numericRows`, y las interpolaciones `polynomial`. La descriptiva añade `metrics`. Las matrices usan `{method, matrix, secondMatrix?, tolerance}` con métodos `matriz-reduccion` (Gauss), `matriz-gauss-jordan`, `matriz-inversa` o `matriz-suma`; requieren una tabla final y `matrixSteps`. El método de inversa acepta `inverseOnly: true` para recibir A cuadrada sin b; de lo contrario recibe [A | b] cuadrada en sus coeficientes. Sus pasos usan bloques de hasta 6 × 12 con `splitAt` para separar A de I. Se guardan en `EntradaJSON`/`ResultadoJSON` de computacionales, sin generar filas de iteración ni requerir migración SQL. Swagger muestra todos los campos y sus límites.
 
@@ -251,7 +251,7 @@ Referencias de implementación: [FastAPI JWT](https://fastapi.tiangolo.com/tutor
 
 Aplica `004_user_management.sql` antes de arrancar esta versión; añade `Usuarios.Activo` y `Usuarios.VersionToken`, conserva las cuentas existentes activas y permite ejecutar de nuevo la migración. No se modifica la base automáticamente al arrancar.
 
-El catálogo actual admite exclusivamente `Usuario` y `Administrador`; el gestor consulta esos roles en el backend. El registro público está deshabilitado. Para habilitar **el primer administrador**, utiliza una cuenta activa ya existente en la base y ejecuta desde una terminal con acceso autorizado:
+El catálogo actual admite exclusivamente `Usuario` y `Administrador`; el gestor consulta esos roles en el backend. El registro público crea exclusivamente cuentas con rol Usuario. Para habilitar **el primer administrador**, utiliza una cuenta activa ya existente en la base y ejecuta desde una terminal con acceso autorizado:
 
 ```powershell
 python tools/bootstrap_admin.py --email tu-correo@example.com

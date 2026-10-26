@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { login, me, readSession, sessionWithUser, storeSession } from '../model/api';
+import { login, register, me, readSession, sessionWithUser, storeSession } from '../model/api';
 import type { UserSession } from '../model/types';
 export function useSessionController() {
   const [session, setSession] = useState<UserSession | null>(readSession);
@@ -47,5 +47,11 @@ export function useSessionController() {
     catch (reason) { setError(reason instanceof Error ? reason.message : 'No se pudo iniciar sesión.'); }
     finally { setLoading(false); }
   }
-  return { session, verifying, loading, error, signIn, signOut };
+  async function signUp(name: string, email: string, password: string) {
+    setLoading(true); setError('');
+    try { const next = await register(name, email, password); storeSession(next); setSession(next); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : 'No se pudo crear la cuenta.'); }
+    finally { setLoading(false); }
+  }
+  return { session, verifying, loading, error, signIn, signUp, signOut, clearError: () => setError('') };
 }
